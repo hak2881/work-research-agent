@@ -58,7 +58,7 @@ def create_server(database_path: str | Path | None = None) -> MCPServer:
         state: str,
         source_evidence_id: int | None = None,
     ) -> dict[str, Any]:
-        """Create or replace the current state of a project TODO."""
+        """Store an explicitly assigned or unresolved project item."""
         return store.upsert_task(
             project_slug,
             external_key,
@@ -137,7 +137,7 @@ def create_server(database_path: str | Path | None = None) -> MCPServer:
 
     @server.tool(name="history_project_context")
     async def project_context(project_slug: str) -> dict[str, Any]:
-        """Return evidence, TODOs, repositories, commits, and links for one project."""
+        """Return work evidence, optional open items, repositories, commits, and links."""
         return store.project_context(project_slug)
 
     return server

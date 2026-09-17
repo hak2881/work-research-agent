@@ -18,7 +18,6 @@
 
 ## Required provenance
 
-Every evidence record needs a project, source type, stable URI or local identifier, title or concise claim, captured time, verification level, confidence, and optional excerpt. Store only the smallest excerpt needed for retrieval; keep the original source authoritative.
+Every evidence record needs a project, source type, stable URI or local identifier, title or concise claim, captured time, verification level, confidence, and optional excerpt. Completed work should state what was requested, decided, implemented, verified, or delivered. Store only the smallest excerpt needed for retrieval; keep the original source authoritative.
 
-TODOs are stateful records. Store the current state plus the evidence that caused each change. Never interpret a code commit alone as `done`.
-
+Tasks are optional stateful records for explicitly assigned or unresolved work. Never create a TODO from a discussion or idea alone, and never interpret a code commit alone as `done`.

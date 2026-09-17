@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Build a shareable Hermes profile that turns a Slack request link into an evidence-backed PM response draft. The agent must recover prior decisions and TODOs, inspect relevant Git history and current code, and verify Shopify claims with official sources or browser evidence before drafting an answer. It never posts to Slack by default.
+Build a shareable agent profile that turns a Slack request link into an evidence-backed PM response draft. The agent must recover what was requested, decided, implemented, verified, and delivered, inspect relevant Git history and current code, and verify Shopify claims with official sources or browser evidence before drafting an answer. It never posts to Slack by default.
 
 ## User workflows
 
@@ -12,12 +12,12 @@ Backfill the local evidence store for a person such as `김병학`.
 
 1. Resolve the Slack identity and record the resolution evidence.
 2. Search every channel accessible to the connected Slack account.
-3. Read complete threads, classify projects, decisions, requirements, and TODO state changes.
+3. Read complete threads and reconstruct each project's completed work and decisions. Track open items only when they are explicit.
 4. Discover repositories from explicit Slack links, project mappings, existing local remotes, and accessible Git hosting metadata.
 5. Clone missing repositories under `<workspace-root>/lukuku/<project>/<repository>` with full commit history. Partial clone with `--filter=blob:none` is allowed; shallow clone is not.
 6. For existing repositories, fetch and prune without resetting, checking out, cleaning, or modifying a dirty worktree.
 7. Index repository metadata, commits, changed files, and explicit or inferred Slack-to-Git links.
-8. Report coverage, inaccessible sources, ambiguous mappings, and unresolved TODOs.
+8. Report completed work, coverage, inaccessible sources, ambiguous mappings, and explicit unresolved items.
 
 ### `/work-research <slack-link>`
 
@@ -37,7 +37,7 @@ Backfill the local evidence store for a person such as `김병학`.
 
 The repository is a Hermes Profile Distribution. `SOUL.md` defines the agent's operating rules, while `skills/work-history` and `skills/work-research` define the two explicit slash-command workflows.
 
-A local stdio MCP server owns a SQLite database. It stores normalized projects, sources, evidence, tasks, repositories, commits, and source links. Raw repository contents remain in Git checkouts; the database stores paths, SHAs, metadata, excerpts, and provenance. SQLite FTS5 supplies local text search.
+A local stdio MCP server owns a SQLite database. Evidence is the primary timeline of sourced work; optional task records are limited to explicitly assigned or unresolved items. The database also stores normalized projects, repositories, commits, and source links. Raw repository contents remain in Git checkouts; the database stores paths, SHAs, metadata, excerpts, and provenance. SQLite FTS5 supplies local text search.
 
 External systems remain separate connectors. Slack, GitHub/Git, Shopify, browser automation, and code analysis provide evidence; the local MCP records and retrieves it. Credentials and customer data are never distributed in this public repository.
 
@@ -64,7 +64,7 @@ The first release includes the Hermes distribution, both skills, a tested SQLite
 
 - The public repository installs as a Hermes profile distribution.
 - Both skills are discoverable as `/work-history` and `/work-research`.
-- The local database can upsert projects, record evidence and TODOs, register repositories and commits, create source links, search evidence, and return a project context bundle.
+- The local database can upsert projects, record completed-work evidence and optional explicit open items, register repositories and commits, create source links, search evidence, and return a project context bundle.
 - Re-running an upsert does not create duplicate logical records.
 - Search results expose provenance and confidence.
 - The repository contains no runtime database, credentials, sessions, or customer history.

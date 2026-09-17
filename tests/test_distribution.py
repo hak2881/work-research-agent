@@ -39,3 +39,10 @@ def test_readme_uses_codex_as_primary_runtime() -> None:
     assert "Codex plugin" in readme
     assert "Codex의 모델과 토큰" in readme
     assert "docs/codex-installation.md" in readme
+
+
+def test_work_history_prioritizes_completed_work_over_todos() -> None:
+    skill = (ROOT / "skills" / "work-history" / "SKILL.md").read_text()
+
+    assert "completed work" in skill
+    assert "Do not infer a TODO" in skill
