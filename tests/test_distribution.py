@@ -47,9 +47,17 @@ def test_work_history_prioritizes_completed_work_over_todos() -> None:
     assert "completed work" in skill
     assert "Do not infer a TODO" in skill
     assert "one-time bootstrap" in skill
+    assert "Do not filter repositories by the person's ownership" in skill
 
 
 def test_work_research_incrementally_persists_new_history() -> None:
     skill = (ROOT / "skills" / "work-research" / "SKILL.md").read_text()
 
     assert "Persist newly verified" in skill
+
+
+def test_codex_docs_use_skill_invocation_syntax() -> None:
+    readme = (ROOT / "README.md").read_text()
+
+    assert "$work-history 김병학" in readme
+    assert "$work-research https://" in readme

@@ -31,7 +31,7 @@ codex mcp list | grep work_history
 
 ## 연결 확인
 
-`/work-history`가 Slack 전체 이력을 찾으려면 Codex에 연결된 Slack 계정이 대상 공개 채널과 비공개 채널의 멤버여야 합니다. 계정을 바꾼 뒤에는 새 쓰레드에서 접근 여부를 다시 검사합니다.
+`$work-history`가 Slack 전체 이력을 찾으려면 Codex에 연결된 Slack 계정이 대상 공개 채널과 비공개 채널의 멤버여야 합니다. 계정을 바꾼 뒤에는 새 쓰레드에서 접근 여부를 다시 검사합니다.
 
 Shopify 문의는 종류에 따라 다음 근거를 사용합니다.
 
@@ -45,16 +45,18 @@ Shopify 문의는 종류에 따라 다음 근거를 사용합니다.
 처음 설치한 뒤 사람의 전체 과거 작업 이력을 한 번 구축합니다.
 
 ```text
-/work-history 김병학
+$work-history 김병학
 ```
 
 이 초기 구축은 보통 한 번만 실행합니다. 이후 Slack 링크 하나로 문의를 조사합니다.
 
 ```text
-/work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
+$work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 ```
 
-`/work-research`는 조사 과정에서 새로 검증한 요청, 결정, 구현과 결과를 로컬 이력에 자동으로 추가합니다. 초기 구축이 빠졌다면 해당 문의에 필요한 프로젝트와 기간만 보충하며, 사람 전체 이력을 다시 수집하지 않습니다.
+`$work-history`는 사람의 저장소를 찾는 명령이 아닙니다. Slack 이력에서 관련 프로젝트를 먼저 식별한 뒤, 각 프로젝트에 속한 저장소를 `~/projects/lukuku/<project>/<repository>`에 클론합니다. 사람의 커밋은 프로젝트 작업을 연결하는 근거로만 사용합니다.
+
+`$work-research`는 조사 과정에서 새로 검증한 요청, 결정, 구현과 결과를 로컬 이력에 자동으로 추가합니다. 초기 구축이 빠졌다면 해당 문의에 필요한 프로젝트와 기간만 보충하며, 사람 전체 이력을 다시 수집하지 않습니다.
 
 ## 데이터 위치와 삭제
 

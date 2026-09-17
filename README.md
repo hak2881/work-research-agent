@@ -1,13 +1,13 @@
 # Work Research Agent
 
-`work-research-agent`는 현재 사용 중인 Codex 안에서 동작하는 Codex plugin입니다. 별도 에이전트 모델이나 API 키를 요구하지 않으며, `/work-history`와 `/work-research`를 실행하는 동안 **Codex의 모델과 토큰**을 그대로 사용합니다.
+`work-research-agent`는 현재 사용 중인 Codex 안에서 동작하는 Codex plugin입니다. 별도 에이전트 모델이나 API 키를 요구하지 않으며, `$work-history`와 `$work-research`를 실행하는 동안 **Codex의 모델과 토큰**을 그대로 사용합니다.
 
 Slack 문의 링크를 받으면 관련 프로젝트와 과거 의사결정을 찾고, Git 및 현재 코드, Shopify 기능이나 앱 동작을 다시 확인한 뒤 검수 가능한 한국어 PM 답변 초안을 만듭니다. 사용자가 명시적으로 요청하지 않는 한 Slack에는 게시하지 않습니다.
 
 ## 제공 기능
 
-- `/work-history <사람>`: 최초 1회 접근 가능한 Slack 전체 과거 대화와 Git 저장소를 조사해 실제 요청·결정·구현·검수·완료 기록을 초기 데이터로 만듭니다.
-- `/work-research <Slack 링크>`: 해당 문의와 실제로 연관된 이력만 선별하고 코드, Shopify, 공식 문서, 브라우저 증거를 다시 검사합니다.
+- `$work-history <사람>`: 최초 1회 접근 가능한 Slack 전체 과거 대화에서 관련 프로젝트를 식별하고, 프로젝트별 저장소를 클론해 실제 요청·결정·구현·검수·완료 기록을 초기 데이터로 만듭니다.
+- `$work-research <Slack 링크>`: 해당 문의와 실제로 연관된 이력만 선별하고 코드, Shopify, 공식 문서, 브라우저 증거를 다시 검사합니다.
 - 로컬 SQLite + FTS5 MCP: 프로젝트, 작업 근거, 저장소, 커밋과 출처 관계를 검색 가능한 형태로 보관하며, 명시적인 미완료 항목만 부가적으로 관리합니다.
 - Codex의 기존 Slack, GitHub, Shopify, Playwright 도구를 사용하므로 조사와 답변 생성도 현재 Codex 세션에서 수행됩니다.
 
@@ -23,11 +23,11 @@ codex plugin add work-research-agent@work-research
 설치 후 새 Codex 쓰레드를 열고 다음처럼 실행합니다.
 
 ```text
-/work-history 김병학
-/work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
+$work-history 김병학
+$work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 ```
 
-`/work-history`는 초기 구축 때 한 번 사용합니다. 이후에는 `/work-research`가 문의를 조사할 때 새로 확인한 근거를 해당 프로젝트 이력에 자동으로 추가합니다.
+`$work-history`는 초기 구축 때 한 번 사용합니다. 저장소는 사람 소유가 아니라 식별된 프로젝트를 기준으로 `~/projects/lukuku/<project>/<repository>`에 수집합니다. 이후에는 `$work-research`가 문의를 조사할 때 새로 확인한 근거를 해당 프로젝트 이력에 자동으로 추가합니다.
 
 모델 선택이나 별도 AI API 키 설정은 필요하지 않습니다. Slack 계정 연결과 조사 대상 채널 접근 권한은 필요합니다. 자세한 내용은 [Codex 설치 가이드](docs/codex-installation.md)를 참고하세요.
 

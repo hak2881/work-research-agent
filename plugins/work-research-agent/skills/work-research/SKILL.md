@@ -2,14 +2,14 @@
 name: work-research
 description: Investigate a Slack customer request against project history, Git, code, Shopify, and browser evidence, then draft a PM answer without posting it.
 metadata:
-  version: 0.2.2
+  version: 0.2.3
   author: hak2881
 license: MIT
 ---
 
 # Work Research
 
-Use the Slack permalink supplied after `/work-research` as the primary request. Produce a reviewable answer draft; never post it automatically.
+Use the Slack permalink supplied after `$work-research` as the primary request. Produce a reviewable answer draft; never post it automatically.
 
 Read [references/research-routing.md](references/research-routing.md) for source selection and [references/response-contract.md](references/response-contract.md) before answering.
 
