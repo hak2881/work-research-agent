@@ -24,9 +24,12 @@ Claude Code 플러그인 스킬은 플러그인 이름이 붙습니다.
 ```text
 /work-research-agent:work-history 김병학
 /work-research-agent:work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
+/work-research-agent:work-act <작업 내용 또는 리서치 결과>
 ```
 
 `work-history`는 최초 초기 데이터 구축에 한 번 사용합니다. Slack 이력에서 관련 프로젝트를 판별하고, 사람의 소유 저장소가 아니라 프로젝트별 관련 저장소를 `~/projects/lukuku/<project>/<repository>`에 수집합니다.
+
+`work-act`는 Playwright로 현재 상태를 확인하고 작업·검수합니다. 운영 영향이 없는 독립 세그먼트·초안은 생성할 수 있으며, 라이브 반영이나 운영에 영향을 주는 실행 직전에 최종 승인을 요청합니다. Playwright 연결과 대상 서비스 로그인·권한이 필요하며, 결과에는 생성 내용·과정·테스트 증거·라이브 반영 여부가 포함됩니다.
 
 ## 데이터
 

@@ -1,6 +1,9 @@
 import json
+import runpy
+import shutil
 from pathlib import Path
 
+import pytest
 import yaml
 
 
@@ -25,7 +28,7 @@ def test_codex_plugin_exposes_skills_and_history_mcp() -> None:
     assert "work_history" in mcp["mcpServers"]
     assert {
         path.parent.name for path in (plugin_root / "skills").glob("*/SKILL.md")
-    } == {"work-history", "work-research"}
+    } == {"work-history", "work-research", "work-act"}
 
     for source in (ROOT / "skills").glob("**/*"):
         if source.is_file():
@@ -77,3 +80,25 @@ def test_codex_docs_use_skill_invocation_syntax() -> None:
 
     assert "$work-history 김병학" in readme
     assert "$work-research https://" in readme
+
+
+@pytest.mark.parametrize("damage", ["missing", "changed", "extra"])
+def test_distribution_validator_rejects_packaged_skill_drift(tmp_path: Path, damage: str) -> None:
+    for directory in (".agents", ".claude-plugin", "plugins", "skills"):
+        shutil.copytree(ROOT / directory, tmp_path / directory)
+    for filename in ("distribution.yaml", "mcp.json", "config.yaml"):
+        shutil.copy2(ROOT / filename, tmp_path / filename)
+
+    packaged = tmp_path / "plugins/work-research-agent/skills/work-act"
+    reference = packaged / "references/execution-contract.md"
+    if damage == "missing":
+        reference.unlink()
+    elif damage == "changed":
+        reference.write_text("Different execution contract\n")
+    else:
+        (packaged / "unexpected.md").write_text("Unpackaged source\n")
+
+    validate = runpy.run_path(str(ROOT / "scripts/validate_distribution.py"))["main"]
+    validate.__globals__["ROOT"] = tmp_path
+    with pytest.raises(ValueError, match="(source and packaged|differs from source)"):
+        validate()

@@ -26,6 +26,10 @@ Read [references/research-routing.md](references/research-routing.md) for source
 9. Persist newly verified request, decision, implementation, verification, delivery, source-link, and explicit open-item evidence so the local history grows incrementally.
 10. Return the draft and actions `1`, `2 <part>`, and `3`. Do not execute clipboard or external-post actions unless the host supports them and the user selects one.
 
+## Execution handoff
+
+When the user wants to carry out a researched app setup or operational task, offer a `$work-act` handoff containing the requested outcome, project/store and target URLs, verified findings and observation times, unresolved developer checks, suggested configuration, acceptance checks, and anticipated live effects. Do not execute it from this research skill or treat the handoff as approval. `work-act` must revalidate current state and obtain final confirmation immediately before live or operationally consequential actions.
+
 ## Re-review behavior
 
 - `1`: copy only the PM response body when clipboard tooling is available; otherwise return a clean copy block.

@@ -49,8 +49,8 @@ def main() -> None:
     yaml.safe_load((ROOT / "config.yaml").read_text())
 
     skill_paths = sorted((ROOT / "skills").glob("*/SKILL.md"))
-    if {path.parent.name for path in skill_paths} != {"work-history", "work-research"}:
-        raise ValueError("both work-history and work-research skills are required")
+    if {path.parent.name for path in skill_paths} != {"work-history", "work-research", "work-act"}:
+        raise ValueError("work-history, work-research, and work-act skills are required")
     for path in skill_paths:
         metadata = load_skill(path)
         name = metadata.get("name")
@@ -61,6 +61,16 @@ def main() -> None:
         for reference in re.findall(r"\((references/[^)]+)\)", path.read_text()):
             if not (path.parent / reference).is_file():
                 raise ValueError(f"{path}: missing referenced file {reference}")
+
+    source_root = ROOT / "skills"
+    plugin_root = ROOT / "plugins" / "work-research-agent" / "skills"
+    source_files = {path.relative_to(source_root) for path in source_root.rglob("*") if path.is_file()}
+    plugin_files = {path.relative_to(plugin_root) for path in plugin_root.rglob("*") if path.is_file()}
+    if source_files != plugin_files:
+        raise ValueError("source and packaged skill files must match")
+    for relative in source_files:
+        if (source_root / relative).read_bytes() != (plugin_root / relative).read_bytes():
+            raise ValueError(f"packaged skill differs from source: {relative}")
 
     tracked_names = {path.name for path in ROOT.rglob("*") if path.is_file()}
     leaked = FORBIDDEN & tracked_names
