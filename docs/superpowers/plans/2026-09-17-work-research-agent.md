@@ -1,6 +1,6 @@
 # Work Research Agent Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Publish a Hermes profile distribution with evidence-backed work-history and work-research skills plus a local SQLite MCP server.
 
@@ -35,9 +35,9 @@
 - Consumes: Hermes profile-distribution and skill conventions.
 - Produces: `/work-history` and `/work-research` workflows and the `work_history` MCP connection.
 
-- [ ] Write the distribution manifest, agent rules, MCP wiring, skills, and supporting references.
-- [ ] Validate YAML, JSON, skill frontmatter, referenced files, and forbidden runtime paths.
-- [ ] Commit the independently installable profile scaffold.
+- [x] Write the distribution manifest, agent rules, MCP wiring, skills, and supporting references.
+- [x] Validate YAML, JSON, skill frontmatter, referenced files, and forbidden runtime paths.
+- [x] Commit the independently installable profile scaffold.
 
 ### Task 2: SQLite evidence repository
 
@@ -49,11 +49,11 @@
 **Interfaces:**
 - Produces: `HistoryStore` methods `upsert_project`, `record_evidence`, `upsert_task`, `register_repository`, `record_commit`, `link_sources`, `search`, and `project_context`.
 
-- [ ] Write failing tests for idempotent project writes, evidence search with provenance, task state replacement, repository/commit recording, source links, and project context.
-- [ ] Run `uv run pytest tests/test_store.py -q` and confirm failure because the package is absent.
-- [ ] Implement the schema and minimal store methods.
-- [ ] Run the store tests and confirm they pass.
-- [ ] Commit the storage core.
+- [x] Write failing tests for idempotent project writes, evidence search with provenance, task state replacement, repository/commit recording, source links, and project context.
+- [x] Run `uv run pytest tests/test_store.py -q` and confirm failure because the package is absent.
+- [x] Implement the schema and minimal store methods.
+- [x] Run the store tests and confirm they pass.
+- [x] Commit the storage core.
 
 ### Task 3: MCP tools and public documentation
 
@@ -68,8 +68,8 @@
 - Consumes: `HistoryStore`.
 - Produces: stdio MCP tools mirroring the storage operations and public installation instructions.
 
-- [ ] Write a failing in-process MCP test that lists and calls representative tools.
-- [ ] Run the MCP test and confirm failure because the server is absent.
-- [ ] Implement the MCP wrapper using `MCPServer`.
-- [ ] Run all tests, package build, JSON/YAML parsing, skill validation, and secret scan.
-- [ ] Commit, tag `v0.1.0`, create `hak2881/work-research-agent` as public, and push `main` plus the tag.
+- [x] Write a failing in-process MCP test that lists and calls representative tools.
+- [x] Run the MCP test and confirm failure because the server is absent.
+- [x] Implement the MCP wrapper using `MCPServer`.
+- [x] Run all tests, package build, JSON/YAML parsing, skill validation, and secret scan.
+- [x] Commit, tag `v0.1.0`, create `hak2881/work-research-agent` as public, and push `main` plus the tag.
