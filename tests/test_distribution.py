@@ -62,8 +62,14 @@ def test_work_history_prioritizes_completed_work_over_todos() -> None:
 
 def test_work_research_incrementally_persists_new_history() -> None:
     skill = (ROOT / "skills" / "work-research" / "SKILL.md").read_text()
+    contract = (
+        ROOT / "skills" / "work-research" / "references" / "response-contract.md"
+    ).read_text()
 
     assert "Persist newly verified" in skill
+    assert "개발자에게 요청할 내용" in contract
+    assert "고객사에게 답변할 내용" in contract
+    assert "developer review required" in contract
 
 
 def test_codex_docs_use_skill_invocation_syntax() -> None:

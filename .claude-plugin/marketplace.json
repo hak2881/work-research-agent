@@ -10,7 +10,7 @@
       "name": "work-research-agent",
       "source": "./plugins/work-research-agent",
       "description": "Build work history and verify Slack customer requests.",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "author": {
         "name": "hak2881"
       },
