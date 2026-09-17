@@ -2,7 +2,7 @@
 name: work-research
 description: Investigate a Slack customer request against project history, Git, code, Shopify, and browser evidence, then draft a PM answer without posting it.
 metadata:
-  version: 0.1.0
+  version: 0.1.1
   author: hak2881
   hermes:
     tags: [slack, shopify, code, fact-check, pm]
