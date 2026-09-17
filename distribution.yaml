@@ -1,11 +1,12 @@
 name: work-research-agent
-version: 0.2.3
+version: 0.3.0
 description: "Evidence-backed PM research from Slack, Git history, code, and Shopify"
 hermes_requires: ">=0.12.0"
 author: "hak2881"
 license: "MIT"
 distribution_owned:
   - .agents/plugins/marketplace.json
+  - .claude-plugin/marketplace.json
   - SOUL.md
   - README.md
   - config.yaml

@@ -1,6 +1,6 @@
 # Work Research Agent
 
-`work-research-agent`는 현재 사용 중인 Codex 안에서 동작하는 Codex plugin입니다. 별도 에이전트 모델이나 API 키를 요구하지 않으며, `$work-history`와 `$work-research`를 실행하는 동안 **Codex의 모델과 토큰**을 그대로 사용합니다.
+`work-research-agent`는 Codex와 Claude Code에서 동작하는 플러그인입니다. 별도 에이전트 모델을 실행하지 않으며, 각 호스트에서 스킬을 실행하는 동안 해당 호스트의 모델과 토큰을 사용합니다.
 
 Slack 문의 링크를 받으면 관련 프로젝트와 과거 의사결정을 찾고, Git 및 현재 코드, Shopify 기능이나 앱 동작을 다시 확인한 뒤 검수 가능한 한국어 PM 답변 초안을 만듭니다. 사용자가 명시적으로 요청하지 않는 한 Slack에는 게시하지 않습니다.
 
@@ -32,6 +32,22 @@ $work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 모델 선택이나 별도 AI API 키 설정은 필요하지 않습니다. Slack 계정 연결과 조사 대상 채널 접근 권한은 필요합니다. 자세한 내용은 [Codex 설치 가이드](docs/codex-installation.md)를 참고하세요.
 
 Hermes 호환 설정도 유지하지만 선택 사항입니다. 필요한 경우에만 [Hermes 설치 가이드](docs/hermes-installation.md)를 사용하세요.
+
+## Claude Code 설치
+
+```bash
+claude plugin marketplace add hak2881/work-research-agent
+claude plugin install work-research-agent@work-research --scope user
+```
+
+Claude Code에서는 다음처럼 실행합니다.
+
+```text
+/work-research-agent:work-history 김병학
+/work-research-agent:work-research <Slack 링크>
+```
+
+자세한 내용은 [Claude Code 설치 가이드](docs/claude-code-installation.md)를 참고하세요.
 
 ## 답변 형식
 

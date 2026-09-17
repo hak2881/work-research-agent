@@ -2,7 +2,7 @@
 name: work-research
 description: Investigate a Slack customer request against project history, Git, code, Shopify, and browser evidence, then draft a PM answer without posting it.
 metadata:
-  version: 0.2.3
+  version: 0.3.0
   author: hak2881
 license: MIT
 ---

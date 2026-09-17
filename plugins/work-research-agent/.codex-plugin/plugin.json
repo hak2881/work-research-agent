@@ -1,6 +1,6 @@
 {
   "name": "work-research-agent",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Evidence-backed PM research from Slack, Git, code, Shopify, and browser verification inside Codex.",
   "author": {
     "name": "hak2881",

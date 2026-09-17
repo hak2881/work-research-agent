@@ -2,7 +2,7 @@
 name: work-history
 description: Run a one-time bootstrap of evidence-backed completed work and decisions from all accessible Slack and Git history for a person.
 metadata:
-  version: 0.2.3
+  version: 0.3.0
   author: hak2881
 license: MIT
 ---

@@ -1,0 +1,20 @@
+{
+  "name": "work-research",
+  "owner": {
+    "name": "hak2881",
+    "url": "https://github.com/hak2881"
+  },
+  "description": "Evidence-backed Slack, Git, code, and Shopify research workflows.",
+  "plugins": [
+    {
+      "name": "work-research-agent",
+      "source": "./plugins/work-research-agent",
+      "description": "Build work history and verify Slack customer requests.",
+      "version": "0.3.0",
+      "author": {
+        "name": "hak2881"
+      },
+      "category": "productivity"
+    }
+  ]
+}

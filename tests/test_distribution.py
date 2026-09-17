@@ -33,11 +33,21 @@ def test_codex_plugin_exposes_skills_and_history_mcp() -> None:
             assert source.read_bytes() == (plugin_root / "skills" / relative).read_bytes()
 
 
-def test_readme_uses_codex_as_primary_runtime() -> None:
+def test_claude_plugin_uses_the_same_skills_and_mcp() -> None:
+    plugin_root = ROOT / "plugins" / "work-research-agent"
+    manifest = json.loads((plugin_root / ".claude-plugin" / "plugin.json").read_text())
+    marketplace = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text())
+
+    assert manifest["name"] == "work-research-agent"
+    assert marketplace["plugins"][0]["source"] == "./plugins/work-research-agent"
+    assert (plugin_root / ".mcp.json").is_file()
+
+
+def test_readme_documents_supported_host_runtimes() -> None:
     readme = (ROOT / "README.md").read_text()
 
-    assert "Codex plugin" in readme
-    assert "Codex의 모델과 토큰" in readme
+    assert "Codex와 Claude Code" in readme
+    assert "해당 호스트의 모델과 토큰" in readme
     assert "docs/codex-installation.md" in readme
 
 

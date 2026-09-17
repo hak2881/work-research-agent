@@ -1,0 +1,12 @@
+{
+  "name": "work-research-agent",
+  "description": "Build project work history from Slack and Git, then verify customer requests against current code, Shopify, and browser evidence.",
+  "version": "0.3.0",
+  "author": {
+    "name": "hak2881",
+    "url": "https://github.com/hak2881"
+  },
+  "homepage": "https://github.com/hak2881/work-research-agent",
+  "repository": "https://github.com/hak2881/work-research-agent",
+  "license": "MIT"
+}
