@@ -1,0 +1,30 @@
+[project]
+name = "work-research-history"
+version = "0.1.0"
+description = "Local evidence store and MCP server for Work Research Agent"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = [
+  "mcp>=2,<3",
+]
+
+[project.scripts]
+work-research-history = "work_research_history.server:main"
+
+[dependency-groups]
+dev = [
+  "build>=1.2",
+  "pytest>=8.0",
+  "pyyaml>=6.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/work_research_history"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
