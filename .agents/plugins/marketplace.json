@@ -1,0 +1,20 @@
+{
+  "name": "work-research",
+  "interface": {
+    "displayName": "Work Research"
+  },
+  "plugins": [
+    {
+      "name": "work-research-agent",
+      "source": {
+        "source": "local",
+        "path": "./plugins/work-research-agent"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

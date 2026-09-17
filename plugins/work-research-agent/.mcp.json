@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "work_history": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/hak2881/work-research-agent.git@v0.2.0",
+        "work-research-history"
+      ],
+      "enabled": true,
+      "startup_timeout_sec": 120
+    }
+  }
+}

@@ -37,6 +37,11 @@ def main() -> None:
     if manifest.get("name") != "work-research-agent":
         raise ValueError("distribution name must be work-research-agent")
     json.loads((ROOT / "mcp.json").read_text())
+    json.loads((ROOT / ".agents" / "plugins" / "marketplace.json").read_text())
+    json.loads(
+        (ROOT / "plugins" / "work-research-agent" / ".codex-plugin" / "plugin.json").read_text()
+    )
+    json.loads((ROOT / "plugins" / "work-research-agent" / ".mcp.json").read_text())
     yaml.safe_load((ROOT / "config.yaml").read_text())
 
     skill_paths = sorted((ROOT / "skills").glob("*/SKILL.md"))
@@ -63,4 +68,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

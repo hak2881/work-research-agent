@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import yaml
@@ -12,3 +13,29 @@ def test_distribution_installs_files_required_to_build_local_mcp() -> None:
 
     assert {"README.md", "pyproject.toml", "src/"}.issubset(owned)
 
+
+def test_codex_plugin_exposes_skills_and_history_mcp() -> None:
+    plugin_root = ROOT / "plugins" / "work-research-agent"
+    manifest = json.loads((plugin_root / ".codex-plugin" / "plugin.json").read_text())
+    mcp = json.loads((plugin_root / ".mcp.json").read_text())
+
+    assert manifest["name"] == "work-research-agent"
+    assert manifest["skills"] == "./skills/"
+    assert manifest["mcpServers"] == "./.mcp.json"
+    assert "work_history" in mcp["mcpServers"]
+    assert {
+        path.parent.name for path in (plugin_root / "skills").glob("*/SKILL.md")
+    } == {"work-history", "work-research"}
+
+    for source in (ROOT / "skills").glob("**/*"):
+        if source.is_file():
+            relative = source.relative_to(ROOT / "skills")
+            assert source.read_bytes() == (plugin_root / "skills" / relative).read_bytes()
+
+
+def test_readme_uses_codex_as_primary_runtime() -> None:
+    readme = (ROOT / "README.md").read_text()
+
+    assert "Codex plugin" in readme
+    assert "Codex의 모델과 토큰" in readme
+    assert "docs/codex-installation.md" in readme

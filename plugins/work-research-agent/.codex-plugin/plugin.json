@@ -1,0 +1,28 @@
+{
+  "name": "work-research-agent",
+  "version": "0.2.0",
+  "description": "Evidence-backed PM research from Slack, Git, code, Shopify, and browser verification inside Codex.",
+  "author": {
+    "name": "hak2881",
+    "url": "https://github.com/hak2881"
+  },
+  "homepage": "https://github.com/hak2881/work-research-agent",
+  "repository": "https://github.com/hak2881/work-research-agent",
+  "license": "MIT",
+  "keywords": ["slack", "git-history", "shopify", "pm", "fact-check"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Work Research Agent",
+    "shortDescription": "Verify Slack requests against history and live sources.",
+    "longDescription": "Build project history from Slack and Git, then verify customer requests against current code, Shopify, and browser evidence before drafting a Korean PM response.",
+    "developerName": "hak2881",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Write"],
+    "websiteURL": "https://github.com/hak2881/work-research-agent",
+    "defaultPrompt": [
+      "/work-history 김병학",
+      "/work-research <Slack 링크>"
+    ]
+  }
+}
