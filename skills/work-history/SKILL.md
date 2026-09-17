@@ -2,7 +2,7 @@
 name: work-history
 description: Build or refresh evidence-backed Slack and Git history for a person or project before customer-request research.
 metadata:
-  version: 0.1.1
+  version: 0.1.2
   author: hak2881
   hermes:
     tags: [slack, git, history, todo, pm]

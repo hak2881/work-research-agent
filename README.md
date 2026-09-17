@@ -15,6 +15,8 @@ The profile contains workflows and local storage. Slack, Git hosting, Shopify Ad
 
 ## Install
 
+For the complete macOS installation, model setup, profile verification, Slack connection, and troubleshooting procedure, see [Hermes installation guide](docs/hermes-installation.md).
+
 Requirements:
 
 - Hermes Agent `0.12.0` or later
@@ -31,6 +33,12 @@ work-research-agent chat
 ```
 
 If the alias is omitted, run `hermes -p work-research-agent chat`.
+
+Before the first chat, select a model for the isolated profile:
+
+```bash
+work-research-agent model
+```
 
 Hermes currently reads MCP servers from `config.yaml`; this distribution also ships the documented `mcp.json` representation so it remains compatible when Hermes resolves that format mismatch. The definitions are intentionally identical.
 
@@ -107,4 +115,3 @@ WORK_RESEARCH_DB=/tmp/work-history.sqlite3 uv run work-research-history
 ## License
 
 MIT
-
