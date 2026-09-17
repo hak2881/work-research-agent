@@ -1,0 +1,21 @@
+terminal:
+  backend: local
+  cwd: "${userHome}/projects"
+
+mcp_servers:
+  work_history:
+    command: uv
+    args:
+      - run
+      - --directory
+      - "${HERMES_HOME}"
+      - work-research-history
+    env:
+      WORK_RESEARCH_DB: "${HERMES_HOME}/local/work-history.sqlite3"
+    enabled: true
+    timeout: 120
+    connect_timeout: 60
+    tools:
+      resources: false
+      prompts: false
+
