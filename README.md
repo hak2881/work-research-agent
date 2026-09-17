@@ -6,7 +6,7 @@ Slack 문의 링크를 받으면 관련 프로젝트와 과거 의사결정을 �
 
 ## 제공 기능
 
-- `/work-history <사람 또는 프로젝트>`: 접근 가능한 Slack 대화와 Git 저장소에서 실제로 요청·결정·구현·검수·완료한 작업의 시간순 이력을 복원합니다.
+- `/work-history <사람>`: 최초 1회 접근 가능한 Slack 전체 과거 대화와 Git 저장소를 조사해 실제 요청·결정·구현·검수·완료 기록을 초기 데이터로 만듭니다.
 - `/work-research <Slack 링크>`: 해당 문의와 실제로 연관된 이력만 선별하고 코드, Shopify, 공식 문서, 브라우저 증거를 다시 검사합니다.
 - 로컬 SQLite + FTS5 MCP: 프로젝트, 작업 근거, 저장소, 커밋과 출처 관계를 검색 가능한 형태로 보관하며, 명시적인 미완료 항목만 부가적으로 관리합니다.
 - Codex의 기존 Slack, GitHub, Shopify, Playwright 도구를 사용하므로 조사와 답변 생성도 현재 Codex 세션에서 수행됩니다.
@@ -26,6 +26,8 @@ codex plugin add work-research-agent@work-research
 /work-history 김병학
 /work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 ```
+
+`/work-history`는 초기 구축 때 한 번 사용합니다. 이후에는 `/work-research`가 문의를 조사할 때 새로 확인한 근거를 해당 프로젝트 이력에 자동으로 추가합니다.
 
 모델 선택이나 별도 AI API 키 설정은 필요하지 않습니다. Slack 계정 연결과 조사 대상 채널 접근 권한은 필요합니다. 자세한 내용은 [Codex 설치 가이드](docs/codex-installation.md)를 참고하세요.
 

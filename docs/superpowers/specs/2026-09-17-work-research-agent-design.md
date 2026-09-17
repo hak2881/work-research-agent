@@ -8,7 +8,7 @@ Build a shareable agent profile that turns a Slack request link into an evidence
 
 ### `/work-history <person>`
 
-Backfill the local evidence store for a person such as `김병학`.
+Run a one-time bootstrap of the local evidence store for a person such as `김병학`. Later `/work-research` runs append newly verified evidence incrementally.
 
 1. Resolve the Slack identity and record the resolution evidence.
 2. Search every channel accessible to the connected Slack account.

@@ -46,3 +46,10 @@ def test_work_history_prioritizes_completed_work_over_todos() -> None:
 
     assert "completed work" in skill
     assert "Do not infer a TODO" in skill
+    assert "one-time bootstrap" in skill
+
+
+def test_work_research_incrementally_persists_new_history() -> None:
+    skill = (ROOT / "skills" / "work-research" / "SKILL.md").read_text()
+
+    assert "Persist newly verified" in skill

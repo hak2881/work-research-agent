@@ -1,15 +1,15 @@
 ---
 name: work-history
-description: Reconstruct evidence-backed completed work, decisions, and optional open items from Slack and Git for a person or project.
+description: Run a one-time bootstrap of evidence-backed completed work and decisions from all accessible Slack and Git history for a person.
 metadata:
-  version: 0.2.1
+  version: 0.2.2
   author: hak2881
 license: MIT
 ---
 
 # Work History
 
-Build a durable timeline of completed work for the person or project named after `/work-history`. Capture what was requested, decided, implemented, changed, verified, and delivered. Store facts through the `work_history` MCP tools; do not treat conversational memory as the business source of truth. TODO tracking is secondary.
+Treat `/work-history <person>` as a one-time bootstrap that creates the initial local history database. Search the full accessible past for that person and build durable project timelines of completed work. Capture what was requested, decided, implemented, changed, verified, and delivered. Store facts through the `work_history` MCP tools; do not treat conversational memory as the business source of truth. TODO tracking is secondary.
 
 Read [references/evidence-model.md](references/evidence-model.md) before writing records. Read [references/git-sync.md](references/git-sync.md) when repositories must be discovered or synchronized.
 
@@ -32,3 +32,5 @@ Default to `${HOME}/projects/lukuku/<project-slug>/<repository-name>`. Reuse a v
 ## Completion rule
 
 Call the history ready only when each known project has source coverage recorded and every inaccessible or ambiguous source appears in the report. Ready means sufficient provenance for research; it does not mean every historical message is accessible.
+
+After this bootstrap, normal updates belong to `/work-research`: each investigation stores newly verified relevant evidence. Do not tell the user to rerun `/work-history` routinely. If the user explicitly reruns it, backfill missing coverage without duplicating existing evidence.

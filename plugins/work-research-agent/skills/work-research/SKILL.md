@@ -2,7 +2,7 @@
 name: work-research
 description: Investigate a Slack customer request against project history, Git, code, Shopify, and browser evidence, then draft a PM answer without posting it.
 metadata:
-  version: 0.2.0
+  version: 0.2.2
   author: hak2881
 license: MIT
 ---
@@ -18,12 +18,13 @@ Read [references/research-routing.md](references/research-routing.md) for source
 1. Parse the workspace, channel, message timestamp, and thread timestamp from the permalink. Fetch the root and every reply. If the connected account cannot read it, report the exact access failure rather than guessing.
 2. Identify the request, requested outcome, requester, customer, project, time constraints, and open questions. Separate quoted requirements from interpretation.
 3. Query the `work_history` MCP for project context and related evidence. Validate that retrieved history is truly related using project identity, participants, linked sources, time, and subject. Exclude keyword-only matches.
-4. If history coverage is missing, perform the smallest necessary `/work-history` style backfill for the resolved project before continuing.
+4. If history coverage is missing, backfill only the resolved project and relevant time range. Do not initiate another person-wide bootstrap.
 5. Route each claim using [references/research-routing.md](references/research-routing.md). Inspect fresh sources for facts that may have changed.
 6. Build a claim ledger. For each material sentence in the proposed answer, record supporting evidence, verification level, confidence, and conflicts.
 7. Draft the response using [references/response-contract.md](references/response-contract.md). Include repository and SHA for code conclusions and observation time for browser/Admin conclusions.
 8. Run a contradiction check: compare the draft against the original request, later thread replies, stored decisions, current code, and fresh platform evidence.
-9. Return the draft and actions `1`, `2 <part>`, and `3`. Do not execute clipboard or external-post actions unless the host supports them and the user selects one.
+9. Persist newly verified request, decision, implementation, verification, delivery, source-link, and explicit open-item evidence so the local history grows incrementally.
+10. Return the draft and actions `1`, `2 <part>`, and `3`. Do not execute clipboard or external-post actions unless the host supports them and the user selects one.
 
 ## Re-review behavior
 
