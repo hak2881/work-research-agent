@@ -104,6 +104,8 @@ def create_server(database_path: str | Path | None = None) -> MCPServer:
         estimate_max: float | None = None,
         estimate_unit: str | None = None,
         estimate_confidence: str | None = None,
+        origin: str = "explicit",
+        estimate_basis: str | None = None,
         acceptance_criteria: list[str] | None = None,
         assumptions: list[str] | None = None,
         exclusions: list[str] | None = None,
@@ -123,6 +125,8 @@ def create_server(database_path: str | Path | None = None) -> MCPServer:
             estimate_max=estimate_max,
             estimate_unit=estimate_unit,
             estimate_confidence=estimate_confidence,
+            origin=origin,
+            estimate_basis=estimate_basis,
             acceptance_criteria=acceptance_criteria or [],
             assumptions=assumptions or [],
             exclusions=exclusions or [],
@@ -150,6 +154,64 @@ def create_server(database_path: str | Path | None = None) -> MCPServer:
             source_evidence_id=source_evidence_id,
             repository_sha=repository_sha,
             occurred_at=occurred_at,
+        )
+
+    @server.tool(name="history_record_work_item_estimate")
+    async def record_work_item_estimate(
+        project_slug: str,
+        external_key: str,
+        estimate_key: str,
+        basis: str,
+        estimate_min: float,
+        estimate_max: float,
+        unit: str,
+        confidence: str,
+        assumptions: list[str] | None = None,
+        exclusions: list[str] | None = None,
+        dependencies: list[str] | None = None,
+        workstreams: list[str] | None = None,
+        repository_sha: str | None = None,
+        source_evidence_id: int | None = None,
+        recorded_at: str | None = None,
+    ) -> dict[str, Any]:
+        """Record a versioned source or engineering estimate without overwriting another."""
+        return store.record_work_item_estimate(
+            project_slug,
+            external_key,
+            estimate_key,
+            basis,
+            estimate_min,
+            estimate_max,
+            unit,
+            confidence=confidence,
+            assumptions=assumptions or [],
+            exclusions=exclusions or [],
+            dependencies=dependencies or [],
+            workstreams=workstreams or [],
+            repository_sha=repository_sha,
+            source_evidence_id=source_evidence_id,
+            recorded_at=recorded_at,
+        )
+
+    @server.tool(name="history_upsert_acceptance_criterion")
+    async def upsert_acceptance_criterion(
+        project_slug: str,
+        external_key: str,
+        criterion_key: str,
+        criterion: str,
+        origin: str,
+        status: str,
+        source_evidence_id: int | None = None,
+    ) -> dict[str, Any]:
+        """Store an explicit or proposed acceptance criterion and its approval state."""
+        return store.upsert_acceptance_criterion(
+            project_slug,
+            external_key,
+            criterion_key,
+            criterion,
+            origin=origin,
+            status=status,
+            source_evidence_id=source_evidence_id,
         )
 
     @server.tool(name="history_link_work_item_dependency")

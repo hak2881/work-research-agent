@@ -96,6 +96,8 @@ def test_developer_plan_records_document_work_items_and_dependencies(tmp_path: P
         estimate_max=8,
         estimate_unit="hours",
         estimate_confidence="medium",
+        origin="explicit",
+        estimate_basis="engineering",
         acceptance_criteria=["A failed delivery is persisted"],
         assumptions=["Existing queue is reused"],
         exclusions=["No new AWS resource"],
@@ -110,6 +112,8 @@ def test_developer_plan_records_document_work_items_and_dependencies(tmp_path: P
         estimate_max=12,
         estimate_unit="hours",
         estimate_confidence="low",
+        origin="proposed",
+        estimate_basis="source",
         acceptance_criteria=["Retries stop at the configured limit"],
     )
     dependency = store.link_work_item_dependency("verish", "DEV-2", "DEV-1")
@@ -122,6 +126,8 @@ def test_developer_plan_records_document_work_items_and_dependencies(tmp_path: P
         "Retries stop at the configured limit"
     ]
     assert context["work_items"][0]["dependencies"] == ["DEV-1"]
+    assert context["work_items"][0]["origin"] == "proposed"
+    assert context["work_items"][0]["estimate_basis"] == "source"
     assert dependency["dependency_key"] == "DEV-1"
 
 
@@ -158,6 +164,73 @@ def test_work_item_events_preserve_state_history(tmp_path: Path) -> None:
         "verification_pending",
     ]
     assert item["events"][-1]["repository_sha"] == "api@def456"
+
+
+def test_work_item_keeps_multiple_estimates_and_sourced_acceptance_criteria(
+    tmp_path: Path,
+) -> None:
+    store = make_store(tmp_path)
+    store.upsert_project("verish", "Verish")
+    store.upsert_work_item("verish", "DEV-1", "Retry worker", state="planned")
+
+    store.record_work_item_estimate(
+        "verish",
+        "DEV-1",
+        "wbs-v1",
+        "source",
+        2,
+        2,
+        "days",
+        confidence="unverified",
+    )
+    store.record_work_item_estimate(
+        "verish",
+        "DEV-1",
+        "engineering-api@abc123",
+        "engineering",
+        20,
+        32,
+        "hours",
+        confidence="medium",
+        assumptions=["Existing queue is reused"],
+        exclusions=["No storefront changes"],
+        dependencies=["Architecture decision ADR-12"],
+        workstreams=["backend", "infrastructure"],
+        repository_sha="api@abc123",
+    )
+    store.upsert_acceptance_criterion(
+        "verish",
+        "DEV-1",
+        "prd-no-loss",
+        "Failed webhooks are not lost",
+        origin="explicit",
+        status="accepted",
+    )
+    store.upsert_acceptance_criterion(
+        "verish",
+        "DEV-1",
+        "eng-idempotency",
+        "Duplicate delivery has no duplicate side effect",
+        origin="proposed",
+        status="proposed",
+    )
+
+    item = store.project_context("verish")["work_items"][0]
+
+    assert [estimate["basis"] for estimate in item["estimates"]] == [
+        "source",
+        "engineering",
+    ]
+    assert item["estimates"][1]["assumptions"] == ["Existing queue is reused"]
+    assert item["estimates"][1]["exclusions"] == ["No storefront changes"]
+    assert item["estimates"][1]["dependencies"] == ["Architecture decision ADR-12"]
+    assert item["estimates"][1]["workstreams"] == ["backend", "infrastructure"]
+    assert item["estimates"][1]["repository_sha"] == "api@abc123"
+    assert [criterion["origin"] for criterion in item["acceptance_criteria_records"]] == [
+        "explicit",
+        "proposed",
+    ]
+    assert item["acceptance_criteria_records"][1]["status"] == "proposed"
 
 
 def test_architecture_snapshots_are_versioned_in_project_context(tmp_path: Path) -> None:

@@ -29,7 +29,7 @@ The architecture snapshot stores a summary, Mermaid source, detailed Markdown, s
 Keep existing projects, evidence, tasks, repositories, commits, and source links compatible. Add:
 
 - `project_documents` for source identity, type, version, and content hash.
-- `work_items` for the current planning state and acceptance contract.
+- `work_items` for the current planning state, plus versioned estimate and sourced acceptance-criterion records.
 - `work_item_dependencies` for directed prerequisites.
 - `work_item_events` for append-only state, decision, implementation, verification, and blocker history.
 - `architecture_snapshots` for versioned technical baselines and Mermaid diagrams.
@@ -39,4 +39,3 @@ Keep existing projects, evidence, tasks, repositories, commits, and source links
 ## Output boundaries
 
 All three skills report in Korean unless requested otherwise and disclose inaccessible sources. `dev-plan` produces a feasibility and estimation report plus the exact work items written. `dev-implement` reports code changes, tests, acceptance checks, history consistency, and DB persistence. `dev-architecture` produces Mermaid diagrams, AWS and repository evidence, developer progress, risks, unknowns, and recommended next ready work.
-

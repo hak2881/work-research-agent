@@ -27,6 +27,9 @@ WORK_ITEM_STATES = {
     "cancelled",
     "superseded",
 }
+WORK_ITEM_ORIGINS = {"explicit", "proposed"}
+ESTIMATE_BASES = {"source", "engineering"}
+ACCEPTANCE_STATUSES = {"proposed", "accepted", "rejected", "verified"}
 
 
 def _now() -> str:
@@ -178,6 +181,8 @@ class HistoryStore:
                 estimate_max REAL,
                 estimate_unit TEXT,
                 estimate_confidence TEXT,
+                origin TEXT NOT NULL,
+                estimate_basis TEXT,
                 acceptance_criteria TEXT NOT NULL DEFAULT '[]',
                 assumptions TEXT NOT NULL DEFAULT '[]',
                 exclusions TEXT NOT NULL DEFAULT '[]',
@@ -204,6 +209,37 @@ class HistoryStore:
                 source_evidence_id INTEGER REFERENCES evidence(id) ON DELETE SET NULL,
                 repository_sha TEXT,
                 occurred_at TEXT NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS work_item_estimates (
+                id INTEGER PRIMARY KEY,
+                work_item_id INTEGER NOT NULL REFERENCES work_items(id) ON DELETE CASCADE,
+                estimate_key TEXT NOT NULL,
+                basis TEXT NOT NULL,
+                estimate_min REAL NOT NULL,
+                estimate_max REAL NOT NULL,
+                unit TEXT NOT NULL,
+                confidence TEXT NOT NULL,
+                assumptions TEXT NOT NULL DEFAULT '[]',
+                exclusions TEXT NOT NULL DEFAULT '[]',
+                dependencies TEXT NOT NULL DEFAULT '[]',
+                workstreams TEXT NOT NULL DEFAULT '[]',
+                repository_sha TEXT,
+                source_evidence_id INTEGER REFERENCES evidence(id) ON DELETE SET NULL,
+                recorded_at TEXT NOT NULL,
+                UNIQUE(work_item_id, estimate_key)
+            );
+
+            CREATE TABLE IF NOT EXISTS work_item_acceptance_criteria (
+                id INTEGER PRIMARY KEY,
+                work_item_id INTEGER NOT NULL REFERENCES work_items(id) ON DELETE CASCADE,
+                criterion_key TEXT NOT NULL,
+                criterion TEXT NOT NULL,
+                origin TEXT NOT NULL,
+                status TEXT NOT NULL,
+                source_evidence_id INTEGER REFERENCES evidence(id) ON DELETE SET NULL,
+                updated_at TEXT NOT NULL,
+                UNIQUE(work_item_id, criterion_key)
             );
 
             CREATE TABLE IF NOT EXISTS architecture_snapshots (
@@ -427,6 +463,8 @@ class HistoryStore:
         estimate_max: float | None = None,
         estimate_unit: str | None = None,
         estimate_confidence: str | None = None,
+        origin: str = "explicit",
+        estimate_basis: str | None = None,
         acceptance_criteria: Iterable[str] = (),
         assumptions: Iterable[str] = (),
         exclusions: Iterable[str] = (),
@@ -436,6 +474,10 @@ class HistoryStore:
             raise ValueError(f"invalid work item state: {state}")
         if estimate_min is not None and estimate_max is not None and estimate_min > estimate_max:
             raise ValueError("estimate_min must not exceed estimate_max")
+        if origin not in WORK_ITEM_ORIGINS:
+            raise ValueError(f"invalid work item origin: {origin}")
+        if estimate_basis is not None and estimate_basis not in ESTIMATE_BASES:
+            raise ValueError(f"invalid estimate basis: {estimate_basis}")
         project = self._project(project_slug)
         previous = self.connection.execute(
             "SELECT * FROM work_items WHERE project_id = ? AND external_key = ?",
@@ -447,9 +489,9 @@ class HistoryStore:
             INSERT INTO work_items(
                 project_id, external_key, parent_key, title, description, state,
                 workstream, priority, estimate_min, estimate_max, estimate_unit,
-                estimate_confidence, acceptance_criteria, assumptions, exclusions,
-                source_evidence_id, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                estimate_confidence, origin, estimate_basis, acceptance_criteria,
+                assumptions, exclusions, source_evidence_id, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(project_id, external_key) DO UPDATE SET
                 parent_key = excluded.parent_key,
                 title = excluded.title,
@@ -461,6 +503,8 @@ class HistoryStore:
                 estimate_max = excluded.estimate_max,
                 estimate_unit = excluded.estimate_unit,
                 estimate_confidence = excluded.estimate_confidence,
+                origin = excluded.origin,
+                estimate_basis = excluded.estimate_basis,
                 acceptance_criteria = excluded.acceptance_criteria,
                 assumptions = excluded.assumptions,
                 exclusions = excluded.exclusions,
@@ -480,6 +524,8 @@ class HistoryStore:
                 estimate_max,
                 estimate_unit,
                 estimate_confidence,
+                origin,
+                estimate_basis,
                 json.dumps(list(acceptance_criteria), ensure_ascii=False),
                 json.dumps(list(assumptions), ensure_ascii=False),
                 json.dumps(list(exclusions), ensure_ascii=False),
@@ -567,6 +613,127 @@ class HistoryStore:
         ).fetchone()
         return _row(row) or {}
 
+    def record_work_item_estimate(
+        self,
+        project_slug: str,
+        external_key: str,
+        estimate_key: str,
+        basis: str,
+        estimate_min: float,
+        estimate_max: float,
+        unit: str,
+        *,
+        confidence: str,
+        assumptions: Iterable[str] = (),
+        exclusions: Iterable[str] = (),
+        dependencies: Iterable[str] = (),
+        workstreams: Iterable[str] = (),
+        repository_sha: str | None = None,
+        source_evidence_id: int | None = None,
+        recorded_at: str | None = None,
+    ) -> dict[str, Any]:
+        if basis not in ESTIMATE_BASES:
+            raise ValueError(f"invalid estimate basis: {basis}")
+        if estimate_min > estimate_max:
+            raise ValueError("estimate_min must not exceed estimate_max")
+        item = self._resolve_work_item(project_slug, external_key)
+        self.connection.execute(
+            """
+            INSERT INTO work_item_estimates(
+                work_item_id, estimate_key, basis, estimate_min, estimate_max,
+                unit, confidence, assumptions, exclusions, dependencies,
+                workstreams, repository_sha, source_evidence_id, recorded_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(work_item_id, estimate_key) DO UPDATE SET
+                basis = excluded.basis,
+                estimate_min = excluded.estimate_min,
+                estimate_max = excluded.estimate_max,
+                unit = excluded.unit,
+                confidence = excluded.confidence,
+                assumptions = excluded.assumptions,
+                exclusions = excluded.exclusions,
+                dependencies = excluded.dependencies,
+                workstreams = excluded.workstreams,
+                repository_sha = excluded.repository_sha,
+                source_evidence_id = excluded.source_evidence_id,
+                recorded_at = excluded.recorded_at
+            """,
+            (
+                item["id"],
+                estimate_key,
+                basis,
+                estimate_min,
+                estimate_max,
+                unit,
+                confidence,
+                json.dumps(list(assumptions), ensure_ascii=False),
+                json.dumps(list(exclusions), ensure_ascii=False),
+                json.dumps(list(dependencies), ensure_ascii=False),
+                json.dumps(list(workstreams), ensure_ascii=False),
+                repository_sha,
+                source_evidence_id,
+                recorded_at or _now(),
+            ),
+        )
+        self.connection.commit()
+        row = self.connection.execute(
+            "SELECT * FROM work_item_estimates WHERE work_item_id = ? AND estimate_key = ?",
+            (item["id"], estimate_key),
+        ).fetchone()
+        result = _row(row) or {}
+        for field in ("assumptions", "exclusions", "dependencies", "workstreams"):
+            result[field] = json.loads(result.get(field, "[]"))
+        return result
+
+    def upsert_acceptance_criterion(
+        self,
+        project_slug: str,
+        external_key: str,
+        criterion_key: str,
+        criterion: str,
+        *,
+        origin: str,
+        status: str,
+        source_evidence_id: int | None = None,
+    ) -> dict[str, Any]:
+        if origin not in WORK_ITEM_ORIGINS:
+            raise ValueError(f"invalid acceptance criterion origin: {origin}")
+        if status not in ACCEPTANCE_STATUSES:
+            raise ValueError(f"invalid acceptance criterion status: {status}")
+        item = self._resolve_work_item(project_slug, external_key)
+        self.connection.execute(
+            """
+            INSERT INTO work_item_acceptance_criteria(
+                work_item_id, criterion_key, criterion, origin, status,
+                source_evidence_id, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(work_item_id, criterion_key) DO UPDATE SET
+                criterion = excluded.criterion,
+                origin = excluded.origin,
+                status = excluded.status,
+                source_evidence_id = excluded.source_evidence_id,
+                updated_at = excluded.updated_at
+            """,
+            (
+                item["id"],
+                criterion_key,
+                criterion,
+                origin,
+                status,
+                source_evidence_id,
+                _now(),
+            ),
+        )
+        self.connection.commit()
+        row = self.connection.execute(
+            """
+            SELECT * FROM work_item_acceptance_criteria
+            WHERE work_item_id = ? AND criterion_key = ?
+            """,
+            (item["id"], criterion_key),
+        ).fetchone()
+        return _row(row) or {}
+
     def link_work_item_dependency(
         self, project_slug: str, work_item_key: str, dependency_key: str
     ) -> dict[str, Any]:
@@ -646,6 +813,16 @@ class HistoryStore:
         for field in ("acceptance_criteria", "assumptions", "exclusions"):
             result[field] = json.loads(result[field])
         return result
+
+    def _resolve_work_item(self, project_slug: str, external_key: str) -> sqlite3.Row:
+        project = self._project(project_slug)
+        item = self.connection.execute(
+            "SELECT * FROM work_items WHERE project_id = ? AND external_key = ?",
+            (project["id"], external_key),
+        ).fetchone()
+        if item is None:
+            raise ValueError(f"unknown work item: {external_key}")
+        return item
 
     def register_repository(
         self,
@@ -885,6 +1062,28 @@ class HistoryStore:
                     """
                     SELECT * FROM work_item_events
                     WHERE work_item_id = ? ORDER BY occurred_at, id
+                    """,
+                    (item["id"],),
+                ).fetchall()
+            ]
+            item["estimates"] = []
+            for estimate_row in self.connection.execute(
+                """
+                SELECT * FROM work_item_estimates
+                WHERE work_item_id = ? ORDER BY recorded_at, id
+                """,
+                (item["id"],),
+            ).fetchall():
+                estimate = dict(estimate_row)
+                for field in ("assumptions", "exclusions", "dependencies", "workstreams"):
+                    estimate[field] = json.loads(estimate[field])
+                item["estimates"].append(estimate)
+            item["acceptance_criteria_records"] = [
+                dict(row)
+                for row in self.connection.execute(
+                    """
+                    SELECT * FROM work_item_acceptance_criteria
+                    WHERE work_item_id = ? ORDER BY updated_at, id
                     """,
                     (item["id"],),
                 ).fetchall()

@@ -56,6 +56,8 @@ async def test_mcp_lists_and_calls_history_tools(tmp_path: Path) -> None:
         "history_record_document",
         "history_upsert_work_item",
         "history_record_work_item_event",
+        "history_record_work_item_estimate",
+        "history_upsert_acceptance_criterion",
         "history_link_work_item_dependency",
         "history_record_architecture_snapshot",
         "history_project_context",
