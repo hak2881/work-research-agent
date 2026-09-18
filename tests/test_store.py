@@ -62,6 +62,128 @@ def test_task_upsert_replaces_current_state_without_duplication(tmp_path: Path) 
     assert len(context["tasks"]) == 1
 
 
+def test_developer_plan_records_document_work_items_and_dependencies(tmp_path: Path) -> None:
+    store = make_store(tmp_path)
+    store.upsert_project("verish", "Verish")
+
+    first_document = store.record_document(
+        "verish",
+        "prd:checkout:v1",
+        "file:///tmp/checkout-prd.md",
+        "prd",
+        "Checkout PRD",
+        version="1",
+        content_hash="sha256:abc",
+        captured_at="2026-09-18T01:00:00Z",
+    )
+    same_document = store.record_document(
+        "verish",
+        "prd:checkout:v1",
+        "file:///tmp/checkout-prd.md",
+        "prd",
+        "Checkout PRD",
+        version="1",
+        content_hash="sha256:abc",
+        captured_at="2026-09-18T01:00:00Z",
+    )
+    store.upsert_work_item(
+        "verish",
+        "DEV-1",
+        "Persist retry state",
+        state="ready",
+        workstream="backend",
+        estimate_min=4,
+        estimate_max=8,
+        estimate_unit="hours",
+        estimate_confidence="medium",
+        acceptance_criteria=["A failed delivery is persisted"],
+        assumptions=["Existing queue is reused"],
+        exclusions=["No new AWS resource"],
+    )
+    store.upsert_work_item(
+        "verish",
+        "DEV-2",
+        "Retry failed deliveries",
+        state="planned",
+        workstream="backend",
+        estimate_min=8,
+        estimate_max=12,
+        estimate_unit="hours",
+        estimate_confidence="low",
+        acceptance_criteria=["Retries stop at the configured limit"],
+    )
+    dependency = store.link_work_item_dependency("verish", "DEV-2", "DEV-1")
+
+    context = store.project_context("verish")
+
+    assert first_document["id"] == same_document["id"]
+    assert context["documents"][0]["content_hash"] == "sha256:abc"
+    assert context["work_items"][0]["acceptance_criteria"] == [
+        "Retries stop at the configured limit"
+    ]
+    assert context["work_items"][0]["dependencies"] == ["DEV-1"]
+    assert dependency["dependency_key"] == "DEV-1"
+
+
+def test_work_item_events_preserve_state_history(tmp_path: Path) -> None:
+    store = make_store(tmp_path)
+    store.upsert_project("verish", "Verish")
+    store.upsert_work_item("verish", "DEV-1", "Retry worker", state="ready")
+
+    store.record_work_item_event(
+        "verish",
+        "DEV-1",
+        "implementation_started",
+        "Started from the accepted plan",
+        state="in_progress",
+        repository_sha="api@abc123",
+        occurred_at="2026-09-18T02:00:00Z",
+    )
+    store.record_work_item_event(
+        "verish",
+        "DEV-1",
+        "verification",
+        "Unit and integration tests passed",
+        state="verification_pending",
+        repository_sha="api@def456",
+        occurred_at="2026-09-18T03:00:00Z",
+    )
+
+    item = store.project_context("verish")["work_items"][0]
+
+    assert item["state"] == "verification_pending"
+    assert [event["to_state"] for event in item["events"]] == [
+        "ready",
+        "in_progress",
+        "verification_pending",
+    ]
+    assert item["events"][-1]["repository_sha"] == "api@def456"
+
+
+def test_architecture_snapshots_are_versioned_in_project_context(tmp_path: Path) -> None:
+    store = make_store(tmp_path)
+    store.upsert_project("verish", "Verish")
+
+    snapshot = store.record_architecture_snapshot(
+        "verish",
+        "2026-09-18-api@abc123",
+        "Shopify webhook processing",
+        "flowchart LR\nShopify --> API --> Queue --> Worker",
+        "AWS account 123456789012, ap-northeast-2, checked 2026-09-18T04:00:00Z",
+        source_refs=["api@abc123", "aws://123456789012/ap-northeast-2"],
+        verification_status="partially_verified",
+        captured_at="2026-09-18T04:00:00Z",
+    )
+
+    context = store.project_context("verish")
+
+    assert context["architecture_snapshots"][0]["id"] == snapshot["id"]
+    assert context["architecture_snapshots"][0]["source_refs"] == [
+        "api@abc123",
+        "aws://123456789012/ap-northeast-2",
+    ]
+
+
 def test_repository_and_commit_are_idempotent(tmp_path: Path) -> None:
     store = make_store(tmp_path)
     store.upsert_project("jente", "Jente")

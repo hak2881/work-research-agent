@@ -67,6 +67,123 @@ def create_server(database_path: str | Path | None = None) -> MCPServer:
             source_evidence_id,
         )
 
+    @server.tool(name="history_record_document")
+    async def record_document(
+        project_slug: str,
+        external_key: str,
+        source_uri: str,
+        document_type: str,
+        title: str,
+        content_hash: str,
+        version: str | None = None,
+        captured_at: str | None = None,
+    ) -> dict[str, Any]:
+        """Record the identity and version of a PRD, WBS, or other project source."""
+        return store.record_document(
+            project_slug,
+            external_key,
+            source_uri,
+            document_type,
+            title,
+            version=version,
+            content_hash=content_hash,
+            captured_at=captured_at,
+        )
+
+    @server.tool(name="history_upsert_work_item")
+    async def upsert_work_item(
+        project_slug: str,
+        external_key: str,
+        title: str,
+        state: str,
+        parent_key: str | None = None,
+        description: str = "",
+        workstream: str | None = None,
+        priority: str | None = None,
+        estimate_min: float | None = None,
+        estimate_max: float | None = None,
+        estimate_unit: str | None = None,
+        estimate_confidence: str | None = None,
+        acceptance_criteria: list[str] | None = None,
+        assumptions: list[str] | None = None,
+        exclusions: list[str] | None = None,
+        source_evidence_id: int | None = None,
+    ) -> dict[str, Any]:
+        """Create or update a sourced developer work item and its current state."""
+        return store.upsert_work_item(
+            project_slug,
+            external_key,
+            title,
+            state=state,
+            parent_key=parent_key,
+            description=description,
+            workstream=workstream,
+            priority=priority,
+            estimate_min=estimate_min,
+            estimate_max=estimate_max,
+            estimate_unit=estimate_unit,
+            estimate_confidence=estimate_confidence,
+            acceptance_criteria=acceptance_criteria or [],
+            assumptions=assumptions or [],
+            exclusions=exclusions or [],
+            source_evidence_id=source_evidence_id,
+        )
+
+    @server.tool(name="history_record_work_item_event")
+    async def record_work_item_event(
+        project_slug: str,
+        external_key: str,
+        event_type: str,
+        note: str,
+        state: str | None = None,
+        source_evidence_id: int | None = None,
+        repository_sha: str | None = None,
+        occurred_at: str | None = None,
+    ) -> dict[str, Any]:
+        """Append a decision, state transition, implementation, or verification event."""
+        return store.record_work_item_event(
+            project_slug,
+            external_key,
+            event_type,
+            note,
+            state=state,
+            source_evidence_id=source_evidence_id,
+            repository_sha=repository_sha,
+            occurred_at=occurred_at,
+        )
+
+    @server.tool(name="history_link_work_item_dependency")
+    async def link_work_item_dependency(
+        project_slug: str, work_item_key: str, dependency_key: str
+    ) -> dict[str, Any]:
+        """Link a work item to another item that must be completed first."""
+        return store.link_work_item_dependency(
+            project_slug, work_item_key, dependency_key
+        )
+
+    @server.tool(name="history_record_architecture_snapshot")
+    async def record_architecture_snapshot(
+        project_slug: str,
+        version: str,
+        summary: str,
+        diagram_mermaid: str,
+        details_markdown: str,
+        verification_status: str,
+        source_refs: list[str] | None = None,
+        captured_at: str | None = None,
+    ) -> dict[str, Any]:
+        """Record a versioned, evidence-backed technical architecture snapshot."""
+        return store.record_architecture_snapshot(
+            project_slug,
+            version,
+            summary,
+            diagram_mermaid,
+            details_markdown,
+            source_refs=source_refs or [],
+            verification_status=verification_status,
+            captured_at=captured_at,
+        )
+
     @server.tool(name="history_register_repository")
     async def register_repository(
         project_slug: str,
