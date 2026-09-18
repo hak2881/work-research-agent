@@ -2,6 +2,8 @@
 
 Write in Korean unless requested otherwise. Report observations from the actual worktree and history records; do not imply merge, deployment, or production completion.
 
+The inline report is the default. HTML is exceptional and is used only when a multi-component flow, data mapping, migration, decision matrix, or substantial acceptance evidence would be materially harder to understand inline. In that case, return the implementation decision and status in the session and link the complete visually verified HTML report. Follow the shared report-quality standard; omit irrelevant sections rather than filling a template.
+
 ```text
 프로젝트·작업: <project> / <work-item key and title>
 입력: <work-item key or Slack thread permalink>

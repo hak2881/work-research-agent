@@ -2,7 +2,7 @@
 name: dev-implement
 description: Use when a developer must implement one ready, evidence-backed work item from a work-item key or Slack permalink while rechecking PRD, Slack, architecture, Git history, accepted criteria, and project history; starts backend work with b-start and stops before PR completion or deployment.
 metadata:
-  version: 0.1.0
+  version: 0.2.0
   author: hak2881
 license: MIT
 ---
@@ -11,7 +11,7 @@ license: MIT
 
 Treat the content after `$dev-implement` as a work-item key or Slack permalink. Implement only one resolved and accepted scope, preserve all decisions and verification in `work_history`, and stop before end, merge, or deploy workflows.
 
-Read [references/implementation-contract.md](references/implementation-contract.md) before changing code.
+Read [references/implementation-contract.md](references/implementation-contract.md) and the shared [../dev-plan/references/report-quality.md](../dev-plan/references/report-quality.md) before changing code or reporting results.
 
 ## Resolve a Slack request
 
@@ -35,6 +35,8 @@ Do not post, reply, react, or change anything in Slack. The thread is an input a
 4. For every affected repository, verify its normalized remote, run `git fetch --prune`, and record the fetched default-branch SHA, current repository@SHA, branch/upstream, dirty state, and observation time. Use CodeGraph first to trace the affected path and impact when available.
 5. Compare current sources and code with the accepted plan. A superseding requirement, conflicting architecture, missing access, or ambiguous SQS/EventBridge-like choice blocks implementation. Record the evidence and state transition instead of choosing an interpretation.
 
+Treat a planning HTML report as a derived navigation artifact, not an authoritative source. Use it to locate decisions and evidence, then recheck the accepted original document versions, Slack decisions, criteria, and current code before editing. If the report conflicts with an original source or omits a decision that changes implementation, return to `$dev-plan` instead of silently following the report.
+
 ## Start safely
 
 - Determine the affected repository and workstream from evidence. For backend work, Invoke `$b-start` only after the preflight above succeeds. If `$b-start` is unavailable, stop before editing.
@@ -49,6 +51,10 @@ Do not post, reply, react, or change anything in Slack. The thread is an input a
 3. Run the focused test, affected tests selected from CodeGraph or actual dependencies, and meaningful integration or failure-path checks. Record expected and observed results at the exact SHA.
 4. Inspect the final diff against the PRD, later Slack decisions, architecture snapshot, accepted criteria, and exclusions. Run an independent contradiction check: no criterion may be credited from a commit message, passing test, or code presence alone when it requires runtime or production evidence.
 5. Persist decisions, implementation events, commit/file metadata, test evidence, discovered blockers, and criterion verification through `work_history`. A persistence failure must be reported; it is not a reason to repeat a code mutation.
+
+## Report proportionally
+
+Use the shared report-quality standard for the final implementation result. Keep the normal result inline and concise. Create a self-contained HTML report under the same safe reports directory only when a multi-component flow, data mapping, migration, decision matrix, or substantial criterion evidence cannot remain clear inline. Do not create HTML because many files changed or because the task took a long time. When HTML is justified, put the decision and implementation status in the session, place the complete implementation contract in the HTML, apply the dev-plan HTML safety and visual-verification rules, and record the route trigger. Persist the generated report URI, content hash, checked time, work-item key, and final repository SHA as a derived artifact linked to the implementation event; the original sources and accepted criteria remain authoritative. If artifact creation, persistence, or visual verification fails, report the failure and provide the complete result inline.
 
 ## Stop boundary
 

@@ -2,7 +2,7 @@
 name: dev-plan
 description: Use when a developer must turn a PM request, PRD, WBS, Slack thread, or project document into an evidence-backed feasibility review, effort range, dependencies, acceptance criteria, and durable work items before implementation.
 metadata:
-  version: 0.2.0
+  version: 0.3.0
   author: hak2881
 license: MIT
 ---
@@ -11,7 +11,7 @@ license: MIT
 
 Treat the content after `$dev-plan` as planning input, not permission to implement it. Produce an evidence-backed development plan and persist its sources and work items through `work_history`.
 
-Read [references/planning-contract.md](references/planning-contract.md) before reporting.
+Read [references/planning-contract.md](references/planning-contract.md) and [references/report-quality.md](references/report-quality.md) before reporting. Apply the quality standard proportionally; it is a decision aid, not a requirement to produce a long document.
 
 ## Establish the source and project
 
@@ -30,6 +30,8 @@ Always give the user a reviewed response they can send back to the PM. Do not po
 - Do not create HTML merely because the request contains an attachment, draws from several sources, or took several analysis steps. Record the simple/complex route trigger in the result so a later review can explain why HTML was or was not created.
 
 For a complex review, put the complete detailed plan in the HTML, including the PM summary, reviewed scope and sources, current behavior and decisions, findings, missing questions with their reasons and development impact, feasibility and options, explicit versus proposed work items, dependencies, acceptance criteria and approval status, source and engineering estimates, progress basis, unresolved items, next ready action, verification state, and repository SHAs inspected.
+
+Choose the sections, tables, labels, and diagrams from the actual request and evidence using the shared report-quality standard. Do not reproduce a reference report's layout or field catalog when it does not help this PM decision.
 
 Create the report safely:
 

@@ -205,6 +205,39 @@ def test_dev_plan_returns_a_pm_reply_and_uses_html_for_complex_reviews() -> None
     assert "추가 없음" in contract
 
 
+def test_dev_workflows_share_a_proportional_evidence_first_report_standard() -> None:
+    plan_skill = (ROOT / "skills" / "dev-plan" / "SKILL.md").read_text()
+    implement_skill = (ROOT / "skills" / "dev-implement" / "SKILL.md").read_text()
+    quality = (
+        ROOT / "skills" / "dev-plan" / "references" / "report-quality.md"
+    ).read_text()
+    implementation_contract = (
+        ROOT
+        / "skills"
+        / "dev-implement"
+        / "references"
+        / "implementation-contract.md"
+    ).read_text()
+
+    assert "references/report-quality.md" in plan_skill
+    assert "../dev-plan/references/report-quality.md" in implement_skill
+    assert "decision before detail" in quality
+    assert "facts, proposals, and unknowns" in quality
+    assert "Do not copy the benchmark's section count" in quality
+    assert "Every material statement" in quality
+    assert "필수 | 조건부 | 파생" in quality
+    assert "information density" in quality
+    assert "preserve heading and table topology" in quality
+    assert "stable row identifiers" in quality
+    assert "rendered-view spot checks" in quality
+    assert "OCR" in quality
+    assert "visually verify" in quality
+    assert "derived navigation artifact, not an authoritative source" in implement_skill
+    assert "generated report URI, content hash, checked time" in implement_skill
+    assert "final repository SHA" in implement_skill
+    assert "HTML is exceptional" in implementation_contract
+
+
 def test_dev_implement_revalidates_history_and_stops_before_end_or_deploy() -> None:
     skill_root = ROOT / "skills" / "dev-implement"
     skill = (skill_root / "SKILL.md").read_text()
