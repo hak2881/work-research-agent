@@ -84,6 +84,30 @@ def test_work_research_incrementally_persists_new_history() -> None:
     assert "developer review required" in contract
 
 
+def test_work_research_supports_comparison_and_request_focused_modes() -> None:
+    skill_root = ROOT / "skills" / "work-research"
+    skill = (skill_root / "SKILL.md").read_text()
+    contract = (skill_root / "references" / "response-contract.md").read_text()
+
+    assert "`$work-research 1 <Slack permalink>`" in skill
+    assert "`$work-research 2 <Slack permalink>`" in skill
+    assert "default to mode 2" in skill
+    assert "A similar historical symptom is not root-cause evidence" in skill
+    assert "directly reproduced or traced end-to-end" in skill
+    assert "A. 재발 방지 관점" in contract
+    assert "B. 현재 요청 관점" in contract
+    assert "요청 중심 답변" in contract
+    assert "복사 A" in contract
+    assert "전체 재검수" in contract
+    for discouraged in (
+        "해당 부분만",
+        "요청 범위에 한정",
+        "최소한으로 수정",
+        "단순 수정",
+    ):
+        assert discouraged not in contract
+
+
 def test_codex_docs_use_skill_invocation_syntax() -> None:
     readme = (ROOT / "README.md").read_text()
 

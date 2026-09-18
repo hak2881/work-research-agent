@@ -59,8 +59,12 @@ $work-status <프로젝트>
 이 명령은 전체 이력을 다시 수집하지 않고 DB의 프로젝트 이력과 마지막 근거 이후의 Slack·Git 상태만 갱신합니다. 완료 범위가 정의된 PRD나 체크리스트가 없으면 임의 진행률을 만들지 않습니다.
 
 ```text
+$work-research 1 https://your-workspace.slack.com/archives/C01234567/p1234567890
+$work-research 2 https://your-workspace.slack.com/archives/C01234567/p1234567890
 $work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 ```
+
+`1`은 재발 방지 관점과 현재 요청 관점의 답변을 함께 만듭니다. 근본 원인은 현재 문의에서 직접 재현하거나 코드 흐름을 끝까지 추적한 경우에만 확정합니다. `2`는 고객사가 요청한 내용에 집중하며, 번호를 생략해도 `2`로 동작합니다.
 
 `$work-history`는 사람의 저장소를 찾는 명령이 아닙니다. Slack 이력에서 관련 프로젝트를 먼저 식별한 뒤, 각 프로젝트에 속한 저장소를 `~/projects/lukuku/<project>/<repository>`에 클론합니다. 사람의 커밋은 프로젝트 작업을 연결하는 근거로만 사용합니다.
 
@@ -111,4 +115,4 @@ codex plugin add work-research-agent@work-research
 - `work_history`가 보이지 않으면 `uv --version`과 `codex mcp list`를 확인하고 새 쓰레드를 여세요.
 - Slack 링크를 읽지 못하면 Codex에 연결된 Slack 계정과 채널 멤버십을 확인하세요.
 - 비공개 채널은 연결 계정이 실제 멤버여야 하며, 검색 결과만으로 원문 접근을 대신할 수 없습니다.
-- 답변이 `partially verified`이면 `2 <부분>` 또는 `3`을 선택해 근거를 새로 수집할 수 있습니다.
+- 답변이 `partially verified`이면 `재검수 <부분>` 또는 `전체 재검수`로 근거를 새로 수집할 수 있습니다.

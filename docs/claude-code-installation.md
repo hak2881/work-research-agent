@@ -24,6 +24,8 @@ Claude Code 플러그인 스킬은 플러그인 이름이 붙습니다.
 ```text
 /work-research-agent:work-history 김병학
 /work-research-agent:work-status <프로젝트>
+/work-research-agent:work-research 1 https://your-workspace.slack.com/archives/C01234567/p1234567890
+/work-research-agent:work-research 2 https://your-workspace.slack.com/archives/C01234567/p1234567890
 /work-research-agent:work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 /work-research-agent:work-act <작업 내용 또는 리서치 결과>
 /work-research-agent:dev-plan <PRD·WBS·Slack 링크·문서>
@@ -31,6 +33,8 @@ Claude Code 플러그인 스킬은 플러그인 이름이 붙습니다.
 /work-research-agent:dev-implement <작업 ID 또는 Slack 링크>
 /work-research-agent:dev-pr [작업 ID 또는 Slack 링크]
 ```
+
+`work-research 1`은 재발 방지 관점과 현재 요청 관점의 답변을 함께 만듭니다. `work-research 2`는 고객사가 요청한 내용에 집중하며, 번호를 생략해도 `2`로 동작합니다. 근본 원인은 현재 문의에서 직접 재현하거나 코드 흐름을 끝까지 추적한 경우에만 확정합니다.
 
 `work-history`는 최초 초기 데이터 구축에 한 번 사용합니다. Slack 이력에서 관련 프로젝트를 판별하고, 사람의 소유 저장소가 아니라 프로젝트별 관련 저장소를 `~/projects/lukuku/<project>/<repository>`에 수집합니다.
 

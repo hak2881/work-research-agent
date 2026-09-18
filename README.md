@@ -7,7 +7,7 @@ Slack 문의 링크를 받으면 관련 프로젝트와 과거 의사결정을 �
 ## 제공 기능
 
 - `$work-history <사람>`: 최초 1회 접근 가능한 Slack 전체 과거 대화에서 관련 프로젝트를 식별하고, 프로젝트별 저장소를 클론해 실제 요청·결정·구현·검수·완료 기록을 초기 데이터로 만듭니다.
-- `$work-research <Slack 링크>`: 해당 문의와 실제로 연관된 이력만 선별하고 코드, Shopify, 공식 문서, 브라우저 증거를 다시 검사합니다.
+- `$work-research [1|2] <Slack 링크>`: 관련 이력과 현재 근거를 다시 검사합니다. `1`은 재발 방지 관점과 현재 요청 관점을 함께 제시하고, `2`는 고객사가 요청한 내용에 집중합니다. 번호를 생략하면 `2`로 동작합니다.
 - `$work-status <프로젝트>`: 저장된 이력과 마지막 근거 이후의 Slack·Git 상태를 확인해 완료·진행 중·차단·미확인 현황을 보고합니다.
 - `$work-act <작업 내용 또는 리서치 결과>`: 실행 가능성과 현재 상태를 재검증한 뒤 Playwright로 앱 설정·세그먼트 생성 등의 작업을 수행하고 결과와 테스트 증거를 보여줍니다. 라이브 반영이나 운영에 영향을 주는 동작은 바로 직전에 최종 확인을 받습니다.
 - `$dev-plan <PRD·WBS·문서>`: 요구사항, 현재 코드, 과거 결정을 교차 검수해 개발 가능성, 공수 범위, 의존성, 완료 조건과 작업 목록을 DB에 기록합니다.
@@ -31,7 +31,9 @@ codex plugin add work-research-agent@work-research
 ```text
 $work-history 김병학
 $work-status <프로젝트>
-$work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
+$work-research 1 https://your-workspace.slack.com/archives/C01234567/p1234567890
+$work-research 2 https://your-workspace.slack.com/archives/C01234567/p1234567890
+$work-research https://your-workspace.slack.com/archives/C01234567/p1234567890  # 2와 동일
 $dev-plan <PRD 또는 WBS>
 $dev-context <프로젝트>
 $dev-implement <작업 ID 또는 Slack 링크>
@@ -55,6 +57,8 @@ Claude Code에서는 다음처럼 실행합니다.
 
 ```text
 /work-research-agent:work-history 김병학
+/work-research-agent:work-research 1 <Slack 링크>
+/work-research-agent:work-research 2 <Slack 링크>
 /work-research-agent:work-research <Slack 링크>
 /work-research-agent:dev-plan <PRD 또는 WBS>
 /work-research-agent:dev-context <프로젝트>
@@ -76,7 +80,7 @@ Claude Code에서는 다음처럼 실행합니다.
 PM: 문의해 주신 내용은 개발 확인이 필요한 사항입니다. 내부 검토 후 다시 안내드리겠습니다.
 ```
 
-개발자 확인이 필요 없는 문의는 기존 형식을 그대로 사용합니다.
+개발자 확인이 필요 없는 문의는 선택한 조사 모드에 맞춰 답변합니다. 모드 `1`은 `A. 재발 방지 관점`과 `B. 현재 요청 관점`을 함께 보여주며, 근본 원인은 현재 문의를 직접 재현하거나 코드 흐름 끝까지 추적한 경우에만 확정합니다. 모드 `2`와 번호를 생략한 호출은 고객사가 요청한 내용에 집중합니다.
 
 ```text
 PM: <검수 후 보낼 수 있는 답변>
@@ -90,12 +94,12 @@ PM: <검수 후 보낼 수 있는 답변>
 검수 상태: verified | partially verified | blocked
 확인한 코드: <repository>@<SHA> | 해당 없음
 
-1. 답변 복사
-2. <부분> 재검수
-3. 전체 독립 재검수
+답변 복사
+재검수 <부분>
+전체 재검수
 ```
 
-`1`은 PM 답변 본문만 복사하고, `2`는 지정한 부분의 근거를 새로 수집하며, `3`은 프로젝트 판별부터 독립적으로 다시 검수합니다.
+모드 `1`에서는 `복사 A` 또는 `복사 B`로 원하는 PM 답변 본문을 선택합니다. `재검수 <부분>`은 지정한 근거를 새로 수집하고, `전체 재검수`는 프로젝트 판별부터 독립적으로 다시 확인합니다.
 
 ## 조사 이후 실제 작업
 
