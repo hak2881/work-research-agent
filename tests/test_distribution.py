@@ -108,6 +108,20 @@ def test_work_research_supports_comparison_and_request_focused_modes() -> None:
         assert discouraged not in contract
 
 
+def test_work_research_may_download_sources_needed_for_verification() -> None:
+    skill_root = ROOT / "skills" / "work-research"
+    skill = (skill_root / "SKILL.md").read_text()
+    routing = (skill_root / "references" / "research-routing.md").read_text()
+
+    assert "download it without asking for separate confirmation" in skill
+    assert "Slack attachment" in routing
+    assert "sanitized source URL" in routing
+    assert "content hash" in routing
+    assert "already available through the current access" in routing
+    assert "generate a new export" in routing
+    assert "Do not execute, install, or upload" in routing
+
+
 def test_codex_docs_use_skill_invocation_syntax() -> None:
     readme = (ROOT / "README.md").read_text()
 

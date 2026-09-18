@@ -2,7 +2,7 @@
 name: work-research
 description: Investigate a Slack customer request against project history, Git, code, Shopify, and browser evidence, then draft a PM answer without posting it.
 metadata:
-  version: 0.4.0
+  version: 0.4.1
   author: hak2881
 license: MIT
 ---
@@ -25,7 +25,7 @@ Read [references/research-routing.md](references/research-routing.md) for source
 2. Identify the request, requested outcome, requester, customer, project, time constraints, and open questions. Separate quoted requirements from interpretation.
 3. Query the `work_history` MCP for project context and related evidence. Validate that retrieved history is truly related using project identity, participants, linked sources, time, and subject. Exclude keyword-only matches.
 4. If history coverage is missing, backfill only the resolved project and relevant time range. Do not initiate another person-wide bootstrap.
-5. Route each claim using [references/research-routing.md](references/research-routing.md). Inspect fresh sources for facts that may have changed.
+5. Route each claim using [references/research-routing.md](references/research-routing.md). Inspect fresh sources for facts that may have changed. When an existing linked attachment, document, export, archive, or other file is already available through the current access and is needed to understand or verify the request, download it without asking for separate confirmation and inspect it according to the routing rules.
 6. Build a claim ledger. For each material sentence in the proposed answer, record supporting evidence, verification level, confidence, and conflicts. Also separate the observed symptom, immediate cause, root cause, recurrence evidence, blast radius, and unresolved assumptions.
 7. Treat a root cause as established only when it was directly reproduced or traced end-to-end through current code, data, configuration, or runtime evidence. A similar historical symptom is not root-cause evidence for the current request. Static proximity, shared keywords, and an older fix may guide investigation but cannot justify a causal claim or a broader change.
 8. Decide whether code changes or developer confirmation are required, then draft the selected mode from [references/response-contract.md](references/response-contract.md). Include repository and SHA for code conclusions and observation time for browser/Admin conclusions.
