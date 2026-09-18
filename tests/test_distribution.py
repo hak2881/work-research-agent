@@ -122,6 +122,25 @@ def test_work_research_may_download_sources_needed_for_verification() -> None:
     assert "Do not execute, install, or upload" in routing
 
 
+def test_work_research_checks_current_remote_default_branch_code() -> None:
+    skill_root = ROOT / "skills" / "work-research"
+    skill = (skill_root / "SKILL.md").read_text()
+    routing = (skill_root / "references" / "research-routing.md").read_text()
+
+    assert "git fetch --prune <verified-remote>" in skill
+    assert "git pull --ff-only" in skill
+    assert "remote default branch" in skill
+    assert "temporary worktree" in skill
+    assert "local HEAD is an ancestor" in skill
+    assert "HEAD exactly equals the fetched" in skill
+    assert "unique temporary path" in skill
+    assert "remove only that temporary worktree" in skill
+    assert "Do not run global `git worktree prune`" in skill
+    assert "Never reset, clean, stash, merge, or rebase" in skill
+    assert "inspected SHA" in routing
+    assert "CodeGraph index corresponds to the inspected SHA" in routing
+
+
 def test_codex_docs_use_skill_invocation_syntax() -> None:
     readme = (ROOT / "README.md").read_text()
 

@@ -10,7 +10,7 @@
       "name": "work-research-agent",
       "source": "./plugins/work-research-agent",
       "description": "Build work history, verify requests, and run evidence-backed developer workflows.",
-      "version": "0.6.3",
+      "version": "0.6.4",
       "author": {
         "name": "hak2881"
       },

@@ -5,7 +5,7 @@ Choose sources by claim type and use the strongest available evidence.
 | Claim | Required checks |
 | --- | --- |
 | What was requested or agreed | Complete Slack thread, linked messages/documents, Slack attachment contents, later corrections |
-| Whether current code supports it | Verified repository mapping, current checkout SHA, code path, Git history |
+| Whether current code supports it | Verified repository mapping, fetched remote default branch, inspected SHA, code path, Git history |
 | Whether Shopify Admin supports it | Official Shopify documentation plus Admin GraphQL/schema or connected Admin observation |
 | Whether a Shopify Function can implement it | Relevant Function API, target availability, input/output limits, deployment constraints, existing extensions |
 | Which Shopify app fits | Current Shopify App Store listing, vendor docs, pricing/compatibility when relevant, Playwright inspection of the actual flow |
@@ -26,4 +26,4 @@ Download an existing Slack attachment, linked document, export, archive, image, 
 - Do not generate a new export, grant access, accept terms, start a paid action, or make another server-side change under the download permission. Follow the normal action boundary for those operations.
 - If access fails or the file has changed, report the limitation instead of inferring its contents.
 
-For code, use CodeGraph before text search when the repository contains `.codegraph/`. If it is a Git repository without `.codegraph/` and the `codegraph` CLI is available, initialize it before code analysis. Confirm important paths directly in source and record the SHA.
+For code, use CodeGraph before text search in the exact checkout or temporary worktree being inspected. Verify that the CodeGraph index corresponds to the inspected SHA; update or rebuild it for that tree before relying on it, or fall back to direct source reads when freshness cannot be established. If that Git tree has no `.codegraph/` and the `codegraph` CLI is available, initialize it before code analysis. Confirm important paths directly in source. Report the remote default branch, fetched SHA, inspected SHA, refresh method, dirty state of the ordinary worktree, and checked time. Do not describe code as current when fetch or inspection of the fetched SHA failed.
