@@ -36,6 +36,7 @@ def test_codex_plugin_exposes_skills_and_history_mcp() -> None:
         "dev-plan",
         "dev-implement",
         "dev-context",
+        "dev-pr",
     }
 
     for source in (ROOT / "skills").glob("**/*"):
@@ -160,6 +161,29 @@ def test_dev_context_separates_architecture_evidence_and_progress() -> None:
     assert "read-only" in skill
     assert "AWS·네트워크·IAM" in contract
     assert "다음 착수 가능 작업" in contract
+
+
+def test_dev_pr_creates_only_one_evidence_backed_pull_request() -> None:
+    skill_root = ROOT / "skills" / "dev-pr"
+    skill = (skill_root / "SKILL.md").read_text()
+    contract = (skill_root / "references" / "pr-contract.md").read_text()
+
+    assert "When invoked without an argument" in skill
+    assert "current Git root" in skill
+    assert "exactly one corroborated work item" in skill
+    assert "Require the resolved item to be `verification_pending`" in skill
+    assert "verified SHA" in skill
+    assert "explicit delivery rule" in skill
+    assert "Enumerate existing pull requests" in skill
+    assert "Never force-push" in skill
+    assert "Never invoke `$b-end`" in skill
+    assert "Never invoke `$f-end`" in skill
+    assert "Never invoke `$b-deploy`" in skill
+    assert "history_record_work_item_event" in skill
+    assert "`pr_create_uncertain`" in skill
+    assert "Do not retry PR creation" in skill
+    assert "PR 생성 결과" in contract
+    assert "병합·배포" in contract
 
 
 @pytest.mark.parametrize("damage", ["missing", "changed", "extra"])

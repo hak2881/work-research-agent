@@ -143,7 +143,7 @@ def test_work_item_events_preserve_state_history(tmp_path: Path) -> None:
         "Started from the accepted plan",
         state="in_progress",
         repository_sha="api@abc123",
-        occurred_at="2026-09-18T02:00:00Z",
+        occurred_at="9999-01-01T02:00:00Z",
     )
     store.record_work_item_event(
         "verish",
@@ -152,7 +152,7 @@ def test_work_item_events_preserve_state_history(tmp_path: Path) -> None:
         "Unit and integration tests passed",
         state="verification_pending",
         repository_sha="api@def456",
-        occurred_at="2026-09-18T03:00:00Z",
+        occurred_at="9999-01-01T03:00:00Z",
     )
 
     item = store.project_context("verish")["work_items"][0]

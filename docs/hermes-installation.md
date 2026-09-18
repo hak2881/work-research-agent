@@ -98,7 +98,7 @@ hermes -p work-research-agent mcp test work_history
 Expected results:
 
 - profile version and GitHub source are displayed;
-- the four `work-*` and three `dev-*` skills are enabled;
+- the four `work-*` and four `dev-*` skills are enabled;
 - `work_history` is enabled;
 - the MCP connection test succeeds and lists its tools.
 
@@ -114,7 +114,7 @@ Then build initial history:
 /work-history 김병학
 ```
 
-Developer workflows use `/dev-plan`, `/dev-context`, and `/dev-implement` in Hermes.
+Developer workflows use `/dev-plan`, `/dev-context`, `/dev-implement`, and `/dev-pr` in Hermes.
 
 ## 5. Browser and Playwright verification
 

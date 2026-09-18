@@ -9,6 +9,7 @@ Add a developer-facing workflow to Work Research Agent without changing the exis
 - `$dev-plan <PRD, WBS, Slack link, or document>` analyzes requirements, feasibility, effort, dependencies, acceptance criteria, and unresolved questions. It writes sourced planning records but does not edit product code.
 - `$dev-implement <work-item key or Slack permalink>` resolves or plans exactly one approved ready item and implements it. For backend work it invokes `$b-start`; it never invokes `$b-end` or `$b-deploy`, merges, or deploys.
 - `$dev-context <project>` maps the code, runtime, data, integration, AWS, and delivery architecture and reports developer-oriented progress and the next ready work. It does not edit product code or cloud resources.
+- `$dev-pr [work-item key or Slack permalink]` resolves the just-finished verified work when omitted, determines the evidenced base branch, and performs only the required normal push and pull-request creation.
 
 ## Evidence and state rules
 
@@ -38,4 +39,4 @@ Keep existing projects, evidence, tasks, repositories, commits, and source links
 
 ## Output boundaries
 
-All three skills report in Korean unless requested otherwise and disclose inaccessible sources. `dev-plan` produces a feasibility and estimation report plus the exact work items written. `dev-implement` reports code changes, tests, acceptance checks, history consistency, and DB persistence. `dev-context` produces Mermaid diagrams, AWS and repository evidence, developer progress, risks, unknowns, and recommended next ready work.
+All four skills report in Korean unless requested otherwise and disclose inaccessible sources. `dev-plan` produces a feasibility and estimation report plus the exact work items written. `dev-implement` reports code changes, tests, acceptance checks, history consistency, and DB persistence. `dev-context` produces Mermaid diagrams, AWS and repository evidence, developer progress, risks, unknowns, and recommended next ready work. `dev-pr` pushes the verified branch and creates or reuses one PR without merging or deploying.

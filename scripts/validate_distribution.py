@@ -57,8 +57,9 @@ def main() -> None:
         "dev-plan",
         "dev-implement",
         "dev-context",
+        "dev-pr",
     }:
-        raise ValueError("the four work skills and three dev skills are required")
+        raise ValueError("the four work skills and four dev skills are required")
     for path in skill_paths:
         metadata = load_skill(path)
         name = metadata.get("name")
