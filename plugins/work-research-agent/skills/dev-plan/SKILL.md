@@ -2,7 +2,7 @@
 name: dev-plan
 description: Use when a developer must turn a PM request, PRD, WBS, Slack thread, or project document into an evidence-backed feasibility review, effort range, dependencies, acceptance criteria, and durable work items before implementation.
 metadata:
-  version: 0.1.0
+  version: 0.2.0
   author: hak2881
 license: MIT
 ---
@@ -20,6 +20,26 @@ Read [references/planning-contract.md](references/planning-contract.md) before r
 3. Record each source with `history_record_document`, including a stable URI, source type, version, content hash, and capture time. Record explicit requirements, decisions, supplied estimates, and unresolved statements as evidence with their provenance.
 4. Load `history_project_context`, then refresh material Slack decisions from each source's explicit coverage checkpoint. When a channel or source has no checkpoint, search all accessible project-relevant Slack history for that source. A stored message is not proof that later replies or channel history were checked. Read complete relevant threads and persist separate channel/source coverage evidence with the searched range and checked-through time. Treat an older Slack architecture decision and an unverified code hypothesis as a conflict to resolve, not a choice.
 5. For every repository that can change feasibility or effort, verify the normalized remote, run `git fetch --prune`, and record the fetched default-branch SHA, inspected working-tree SHA, dirty state, and observation time. Do not reset, merge, rebase, clean, or treat an old local checkout as current. Inspect architecture-dependent behavior at the current repository@SHA and use CodeGraph first when available.
+
+## Prepare the PM delivery
+
+Always give the user a reviewed response they can send back to the PM. Do not post the reply to Slack or another external service.
+
+- Use a **simple review** when the conclusion, material questions, and decision-changing evidence remain clear in a concise session response. Start with `PM에게 전달할 내용`, then include the internal planning report inline.
+- Use a **complex review** only when the presentation requires a matrix or diagram, has multiple viable options with tradeoffs, or the material conclusion, questions, and evidence cannot remain clear in a concise inline response. Start with `PM에게 전달할 내용` and a clickable local link to a self-contained HTML report. Put the complete detailed plan in the HTML; only add a short internal status inline when it helps the user act.
+- Do not create HTML merely because the request contains an attachment, draws from several sources, or took several analysis steps. Record the simple/complex route trigger in the result so a later review can explain why HTML was or was not created.
+
+For a complex review, put the complete detailed plan in the HTML, including the PM summary, reviewed scope and sources, current behavior and decisions, findings, missing questions with their reasons and development impact, feasibility and options, explicit versus proposed work items, dependencies, acceptance criteria and approval status, source and engineering estimates, progress basis, unresolved items, next ready action, verification state, and repository SHAs inspected.
+
+Create the report safely:
+
+- Build a sanitized ASCII basename from the project and source or work-item identity, append a unique timestamp or content-hash suffix, and create without overwriting an existing file.
+- Resolve both the reports directory and candidate path and verify the resolved path remains inside `~/.local/share/work-research-agent/reports/`. Use an atomic write and private user-only permissions.
+- Keep the HTML self-contained with inline CSS and no remote scripts, embedded active content, or remote assets. Use allowlisted link schemes such as `https` and `http` or a plain sanitized Slack reference; escape untrusted source text and HTML attribute values.
+- Strip credentials and signed URL parameters and exclude secrets or unnecessary personal data.
+- Render or open the finished file and visually inspect its readability before returning it.
+
+Record the generated report URI, content hash, and checked time in project history without treating the report as an authoritative source. Always return the inline PM conclusion even if artifact creation fails. If writing, rendering, or visual inspection fails, report the artifact failure and provide the complete detailed review as an inline fallback instead of omitting the result.
 
 ## Build the work plan
 
@@ -41,4 +61,4 @@ Read [references/planning-contract.md](references/planning-contract.md) before r
 
 Use `history_upsert_work_item` for each persisted item and retain exact source evidence or links. Use `history_record_work_item_event` for acceptance, supersession, blockers, or later planning decisions. Mark replaced items `superseded`; do not delete their history.
 
-Do not edit product code, create a development branch, invoke `$b-start`, operate Shopify, mutate AWS, merge, or deploy. Recommend `$dev-implement <work-item key>` only for items that are actually ready. If critical information is absent, return the smallest set of questions that changes feasibility, architecture, scope, or effort.
+Do not edit product code, create a development branch, invoke `$b-start`, operate Shopify, mutate AWS, merge, deploy, or send the PM reply. Recommend `$dev-implement <work-item key>` only for items that are actually ready. If critical information is absent, return the smallest set of questions that changes feasibility, architecture, scope, or effort.

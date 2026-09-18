@@ -162,6 +162,30 @@ def test_dev_plan_separates_sourced_requirements_from_engineering_proposals() ->
     assert "공수 범위와 근거" in contract
 
 
+def test_dev_plan_returns_a_pm_reply_and_uses_html_for_complex_reviews() -> None:
+    skill_root = ROOT / "skills" / "dev-plan"
+    skill = (skill_root / "SKILL.md").read_text()
+    contract = (skill_root / "references" / "planning-contract.md").read_text()
+
+    assert "PM에게 전달할 내용" in contract
+    assert "simple review" in skill
+    assert "complex review" in skill
+    assert "~/.local/share/work-research-agent/reports/" in skill
+    assert "self-contained HTML" in skill
+    assert "Do not create HTML merely because" in skill
+    assert "Do not post the reply to Slack" in skill
+    assert "route trigger" in skill
+    assert "complete detailed plan in the HTML" in skill
+    assert "resolved path remains inside" in skill
+    assert "atomic write" in skill
+    assert "private user-only permissions" in skill
+    assert "allowlisted link schemes" in skill
+    assert "escape untrusted source text" in skill
+    assert "visually inspect" in skill
+    assert "inline fallback" in skill
+    assert "추가 없음" in contract
+
+
 def test_dev_implement_revalidates_history_and_stops_before_end_or_deploy() -> None:
     skill_root = ROOT / "skills" / "dev-implement"
     skill = (skill_root / "SKILL.md").read_text()

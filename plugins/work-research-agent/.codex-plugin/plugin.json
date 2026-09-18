@@ -1,6 +1,6 @@
 {
   "name": "work-research-agent",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Evidence-backed PM research and developer planning, implementation, architecture, AWS, and Shopify verification inside Codex.",
   "author": {
     "name": "hak2881",

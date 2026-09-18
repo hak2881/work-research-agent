@@ -1,6 +1,33 @@
 # Development planning report
 
-Write in Korean unless requested otherwise. Keep sourced facts, engineering proposals, and unanswered questions visibly separate.
+Write in Korean unless requested otherwise. Keep sourced facts, engineering proposals, and unanswered questions visibly separate. The first section is always the PM-facing result. For a simple review, the detailed report follows inline. For a complex review, the complete detailed report belongs in the linked HTML and the session contains only the PM conclusion, link, and an optional short internal status.
+
+## Simple review
+
+```text
+PM에게 전달할 내용
+PM: <검토 결론과 PM이 알아야 할 다음 행동을 바로 전달할 수 있는 짧은 답변>
+
+추가 확인 질문
+- <question, reason, and development impact>
+```
+
+When no additional answer or decision is needed, write `추가 없음` explicitly and briefly name what was reviewed. Do not expose internal tool mechanics, database operations, or speculative implementation details in the sendable text.
+
+## Complex review
+
+Return a short session response before the detailed planning report:
+
+```text
+PM에게 전달할 내용
+PM: <핵심 결론, 중요한 추가 질문 또는 다음 결정>
+
+상세 검토 보고서: <clickable local HTML link>
+```
+
+The linked HTML carries every field from the internal planning report in addition to the source comparison, findings, reasons, development impact, options, and evidence. The session response must still state the decision; do not make the user open the file merely to learn the conclusion. If the HTML cannot be created and visually verified, identify the failure and return the full internal planning report inline.
+
+## Internal planning report
 
 ```text
 프로젝트: <canonical project>
