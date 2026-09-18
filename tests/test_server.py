@@ -20,6 +20,7 @@ async def test_mcp_lists_and_calls_history_tools(tmp_path: Path) -> None:
         context = await client.call_tool(
             "history_project_context", {"project_slug": "verish"}
         )
+        projects = await client.call_tool("history_find_projects", {"query": "Verish"})
 
     assert {
         "history_upsert_project",
@@ -29,8 +30,9 @@ async def test_mcp_lists_and_calls_history_tools(tmp_path: Path) -> None:
         "history_record_commit",
         "history_link_sources",
         "history_search",
+        "history_find_projects",
         "history_project_context",
     }.issubset(names)
     assert created.structured_content["slug"] == "verish"
     assert context.structured_content["project"]["name"] == "Verish"
-
+    assert projects.structured_content["result"][0]["slug"] == "verish"

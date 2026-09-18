@@ -50,6 +50,14 @@ $work-history 김병학
 
 이 초기 구축은 보통 한 번만 실행합니다. 이후 Slack 링크 하나로 문의를 조사합니다.
 
+프로젝트의 현재 진행현황은 다음처럼 조회합니다.
+
+```text
+$work-status <프로젝트>
+```
+
+이 명령은 전체 이력을 다시 수집하지 않고 DB의 프로젝트 이력과 마지막 근거 이후의 Slack·Git 상태만 갱신합니다. 완료 범위가 정의된 PRD나 체크리스트가 없으면 임의 진행률을 만들지 않습니다.
+
 ```text
 $work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 ```

@@ -135,6 +135,11 @@ def create_server(database_path: str | Path | None = None) -> MCPServer:
         """Search evidence text and return provenance with each result."""
         return store.search(query, project_slug=project_slug, limit=limit)
 
+    @server.tool(name="history_find_projects")
+    async def find_projects(query: str, limit: int = 20) -> list[dict[str, Any]]:
+        """Resolve a project by slug, name, or customer and return coverage counts."""
+        return store.find_projects(query, limit=limit)
+
     @server.tool(name="history_project_context")
     async def project_context(project_slug: str) -> dict[str, Any]:
         """Return work evidence, optional open items, repositories, commits, and links."""

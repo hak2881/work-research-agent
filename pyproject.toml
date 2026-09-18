@@ -1,6 +1,6 @@
 [project]
 name = "work-research-history"
-version = "0.3.1"
+version = "0.4.0"
 description = "Local evidence store and MCP server for Work Research Agent"
 readme = "README.md"
 requires-python = ">=3.11"

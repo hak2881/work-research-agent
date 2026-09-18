@@ -23,6 +23,7 @@ Claude Code 플러그인 스킬은 플러그인 이름이 붙습니다.
 
 ```text
 /work-research-agent:work-history 김병학
+/work-research-agent:work-status <프로젝트>
 /work-research-agent:work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 /work-research-agent:work-act <작업 내용 또는 리서치 결과>
 ```

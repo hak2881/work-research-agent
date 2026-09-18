@@ -49,8 +49,13 @@ def main() -> None:
     yaml.safe_load((ROOT / "config.yaml").read_text())
 
     skill_paths = sorted((ROOT / "skills").glob("*/SKILL.md"))
-    if {path.parent.name for path in skill_paths} != {"work-history", "work-research", "work-act"}:
-        raise ValueError("work-history, work-research, and work-act skills are required")
+    if {path.parent.name for path in skill_paths} != {
+        "work-history",
+        "work-research",
+        "work-status",
+        "work-act",
+    }:
+        raise ValueError("work-history, work-research, work-status, and work-act skills are required")
     for path in skill_paths:
         metadata = load_skill(path)
         name = metadata.get("name")

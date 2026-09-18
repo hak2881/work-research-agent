@@ -18,6 +18,15 @@ def test_project_upsert_is_idempotent(tmp_path: Path) -> None:
     assert store.project_context("verish")["project"]["slug"] == "verish"
 
 
+def test_find_projects_resolves_name_customer_and_slug(tmp_path: Path) -> None:
+    store = make_store(tmp_path)
+    store.upsert_project("verish", "Verish Store", customer="베리시")
+    store.upsert_project("jente", "Jente", customer="젠테")
+
+    assert [item["slug"] for item in store.find_projects("베리시")] == ["verish"]
+    assert [item["slug"] for item in store.find_projects("verish")] == ["verish"]
+
+
 def test_evidence_search_returns_provenance(tmp_path: Path) -> None:
     store = make_store(tmp_path)
     store.upsert_project("verish", "Verish")
@@ -140,4 +149,3 @@ def test_rejects_unknown_verification_values(tmp_path: Path) -> None:
         assert "verification_level" in str(exc)
     else:
         raise AssertionError("invalid verification level was accepted")
-

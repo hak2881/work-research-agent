@@ -169,6 +169,36 @@ class HistoryStore:
         self.connection.commit()
         return _row(self._project(slug)) or {}
 
+    def find_projects(self, query: str, limit: int = 20) -> list[dict[str, Any]]:
+        value = query.strip()
+        if not value:
+            return []
+        pattern = f"%{value}%"
+        rows = self.connection.execute(
+            """
+            SELECT p.*,
+                   (SELECT COUNT(*) FROM evidence e WHERE e.project_id = p.id) AS evidence_count,
+                   (SELECT MAX(e.captured_at) FROM evidence e WHERE e.project_id = p.id) AS latest_evidence_at,
+                   (SELECT COUNT(*) FROM repositories r WHERE r.project_id = p.id) AS repository_count,
+                   (SELECT COUNT(*) FROM tasks t WHERE t.project_id = p.id) AS task_count
+            FROM projects p
+            WHERE p.slug LIKE ? COLLATE NOCASE
+               OR p.name LIKE ? COLLATE NOCASE
+               OR COALESCE(p.customer, '') LIKE ? COLLATE NOCASE
+            ORDER BY
+                CASE
+                    WHEN p.slug = ? COLLATE NOCASE THEN 0
+                    WHEN p.name = ? COLLATE NOCASE THEN 1
+                    WHEN p.customer = ? COLLATE NOCASE THEN 2
+                    ELSE 3
+                END,
+                p.updated_at DESC
+            LIMIT ?
+            """,
+            (pattern, pattern, pattern, value, value, value, limit),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
     def record_evidence(
         self,
         *,

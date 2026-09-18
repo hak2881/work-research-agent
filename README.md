@@ -8,6 +8,7 @@ Slack 문의 링크를 받으면 관련 프로젝트와 과거 의사결정을 �
 
 - `$work-history <사람>`: 최초 1회 접근 가능한 Slack 전체 과거 대화에서 관련 프로젝트를 식별하고, 프로젝트별 저장소를 클론해 실제 요청·결정·구현·검수·완료 기록을 초기 데이터로 만듭니다.
 - `$work-research <Slack 링크>`: 해당 문의와 실제로 연관된 이력만 선별하고 코드, Shopify, 공식 문서, 브라우저 증거를 다시 검사합니다.
+- `$work-status <프로젝트>`: 저장된 이력과 마지막 근거 이후의 Slack·Git 상태를 확인해 완료·진행 중·차단·미확인 현황을 보고합니다.
 - `$work-act <작업 내용 또는 리서치 결과>`: 실행 가능성과 현재 상태를 재검증한 뒤 Playwright로 앱 설정·세그먼트 생성 등의 작업을 수행하고 결과와 테스트 증거를 보여줍니다. 라이브 반영이나 운영에 영향을 주는 동작은 바로 직전에 최종 확인을 받습니다.
 - 로컬 SQLite + FTS5 MCP: 프로젝트, 작업 근거, 저장소, 커밋과 출처 관계를 검색 가능한 형태로 보관하며, 명시적인 미완료 항목만 부가적으로 관리합니다.
 - Codex의 기존 Slack, GitHub, Shopify, Playwright 도구를 사용하므로 조사와 답변 생성도 현재 Codex 세션에서 수행됩니다.
@@ -25,6 +26,7 @@ codex plugin add work-research-agent@work-research
 
 ```text
 $work-history 김병학
+$work-status <프로젝트>
 $work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 ```
 

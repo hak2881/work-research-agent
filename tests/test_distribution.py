@@ -28,7 +28,7 @@ def test_codex_plugin_exposes_skills_and_history_mcp() -> None:
     assert "work_history" in mcp["mcpServers"]
     assert {
         path.parent.name for path in (plugin_root / "skills").glob("*/SKILL.md")
-    } == {"work-history", "work-research", "work-act"}
+    } == {"work-history", "work-research", "work-status", "work-act"}
 
     for source in (ROOT / "skills").glob("**/*"):
         if source.is_file():
@@ -80,6 +80,24 @@ def test_codex_docs_use_skill_invocation_syntax() -> None:
 
     assert "$work-history 김병학" in readme
     assert "$work-research https://" in readme
+    assert "$work-status <프로젝트>" in readme
+
+
+def test_work_status_reports_evidence_backed_current_state() -> None:
+    skill_root = ROOT / "skills" / "work-status"
+    skill = (skill_root / "SKILL.md").read_text()
+    contract = (skill_root / "references" / "status-contract.md").read_text()
+
+    assert "Do not invent a completion percentage" in skill
+    assert "last stored evidence" in skill
+    assert "repository@SHA" in contract
+    assert "완료된 작업" in contract
+    assert "진행 중" in contract
+    assert "차단·확인 필요" in contract
+    assert "상태 미확인" in contract
+    assert "Slack 이전 확인 지점" in contract
+    assert "Evidence-only writes" in skill
+    assert "$work-act" in contract
 
 
 @pytest.mark.parametrize("damage", ["missing", "changed", "extra"])

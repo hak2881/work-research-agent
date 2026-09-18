@@ -1,6 +1,6 @@
 {
   "name": "work-research-agent",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Evidence-backed PM research from Slack, Git, code, Shopify, and browser verification inside Codex.",
   "author": {
     "name": "hak2881",
@@ -22,6 +22,7 @@
     "websiteURL": "https://github.com/hak2881/work-research-agent",
     "defaultPrompt": [
       "$work-history 김병학",
+      "$work-status <프로젝트>",
       "$work-research <Slack 링크>"
     ]
   }
