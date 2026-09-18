@@ -38,4 +38,4 @@ Keep existing projects, evidence, tasks, repositories, commits, and source links
 
 ## Output boundaries
 
-All three skills report in Korean unless requested otherwise and disclose inaccessible sources. `dev-plan` produces a feasibility and estimation report plus the exact work items written. `dev-implement` reports code changes, tests, acceptance checks, history consistency, and DB persistence. `dev-architecture` produces Mermaid diagrams, AWS and repository evidence, developer progress, risks, unknowns, and recommended next ready work.
+All three skills report in Korean unless requested otherwise and disclose inaccessible sources. `dev-plan` produces a feasibility and estimation report plus the exact work items written. `dev-implement` reports code changes, tests, acceptance checks, history consistency, and DB persistence. `dev-context` produces Mermaid diagrams, AWS and repository evidence, developer progress, risks, unknowns, and recommended next ready work.

@@ -26,6 +26,9 @@ Claude Code 플러그인 스킬은 플러그인 이름이 붙습니다.
 /work-research-agent:work-status <프로젝트>
 /work-research-agent:work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 /work-research-agent:work-act <작업 내용 또는 리서치 결과>
+/work-research-agent:dev-plan <PRD·WBS·Slack 링크·문서>
+/work-research-agent:dev-context <프로젝트>
+/work-research-agent:dev-implement <작업 ID>
 ```
 
 `work-history`는 최초 초기 데이터 구축에 한 번 사용합니다. Slack 이력에서 관련 프로젝트를 판별하고, 사람의 소유 저장소가 아니라 프로젝트별 관련 저장소를 `~/projects/lukuku/<project>/<repository>`에 수집합니다.

@@ -98,7 +98,7 @@ hermes -p work-research-agent mcp test work_history
 Expected results:
 
 - profile version and GitHub source are displayed;
-- `work-history` and `work-research` are enabled;
+- the four `work-*` and three `dev-*` skills are enabled;
 - `work_history` is enabled;
 - the MCP connection test succeeds and lists its tools.
 
@@ -113,6 +113,8 @@ Then build initial history:
 ```text
 /work-history 김병학
 ```
+
+Developer workflows use `/dev-plan`, `/dev-context`, and `/dev-implement` in Hermes.
 
 ## 5. Browser and Playwright verification
 
@@ -214,4 +216,3 @@ Confirm that the Slack app is installed in the same workspace, invited to the pr
 ## Verified environment
 
 This procedure was exercised on macOS ARM64 on 2026-09-17 with Hermes Agent `0.21.3`, Python `3.11.15`, SQLite `3.53.1`, and Playwright Chromium installed by the official installer.
-

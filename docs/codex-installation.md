@@ -72,6 +72,16 @@ $work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 $work-act <작업 내용 또는 리서치 결과>
 ```
 
+개발 계획과 착수에는 다음 명령을 사용합니다.
+
+```text
+$dev-plan <PRD·WBS·Slack 링크·문서>
+$dev-context <프로젝트>
+$dev-implement <작업 ID>
+```
+
+`dev-implement`는 백엔드 작업에서 `$b-start`까지만 사용합니다. `$b-end`, `$b-deploy`, PR 병합과 배포는 실행하지 않으며 구현 결과를 `verification_pending`으로 남깁니다.
+
 Playwright 연결과 대상 계정의 작업 권한이 필요합니다. 현재 상태를 재확인하고 안전한 초안·독립 세그먼트를 준비·검수합니다. 라이브 반영, 앱 설치 권한·과금, 운영 자동화 등에 영향을 주는 동작 직전에는 검수 결과와 정확한 실행 내용을 보여주고 최종 확인을 받습니다. 생성한 객체·설정·테스트 결과·가능한 화면 증거와 이력 저장 여부를 보고합니다.
 
 ## 데이터 위치와 삭제
