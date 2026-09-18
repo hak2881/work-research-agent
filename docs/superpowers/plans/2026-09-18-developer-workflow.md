@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add `$dev-plan`, `$dev-implement`, and `$dev-architecture` with durable planning, implementation, and architecture history.
+**Goal:** Add `$dev-plan`, `$dev-implement`, and `$dev-context` with durable planning, implementation, and architecture history.
 
 **Architecture:** Extend the existing SQLite/MCP store with additive tables and focused tools, then add three packaged skills that consume the same project context. Keep PM commands compatible and make every developer conclusion traceable to documents, Slack, Git, code, or cloud observations.
 
@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Skill names are exactly `dev-plan`, `dev-implement`, and `dev-architecture`.
+- Skill names are exactly `dev-plan`, `dev-implement`, and `dev-context`.
 - Backend implementation invokes `$b-start` only; it never invokes `$b-end` or `$b-deploy`.
 - Work-item history is append-only and completion requires acceptance evidence.
 - AWS and architecture claims require repository@SHA or account/region/time evidence.
@@ -81,11 +81,11 @@
 - [ ] Close demonstrated loopholes and rerun all tests.
 - [ ] Commit the verified implementation skill.
 
-### Task 4: Architecture and developer progress skill
+### Task 4: Developer context and architecture skill
 
 **Files:**
-- Create: `skills/dev-architecture/SKILL.md`
-- Create: `skills/dev-architecture/references/architecture-contract.md`
+- Create: `skills/dev-context/SKILL.md`
+- Create: `skills/dev-context/references/context-contract.md`
 - Modify: `tests/test_distribution.py`
 - Modify: `scripts/validate_distribution.py`
 
@@ -94,8 +94,8 @@
 - Produces: versioned Mermaid and Markdown architecture snapshots plus evidence-backed developer progress.
 
 - [ ] Run a no-skill scenario with incomplete IaC and misleading AWS names and record unsupported inferences.
-- [ ] Add a failing behavior test for repository@SHA, AWS account/region/time, Mermaid, unknowns, and authoritative progress.
-- [ ] Run the focused test and confirm it fails because `dev-architecture` is absent.
+- [ ] Add a failing behavior test for repository@SHA, AWS account/region/time, Mermaid, unknowns, authoritative progress, and next-ready work.
+- [ ] Run the focused test and confirm it fails because `dev-context` is absent.
 - [ ] Write and package the minimal architecture skill and report contract.
 - [ ] Rerun the scenario and close demonstrated inference and coverage loopholes.
 - [ ] Run quick validation, distribution validation, and all tests.

@@ -35,6 +35,7 @@ def test_codex_plugin_exposes_skills_and_history_mcp() -> None:
         "work-act",
         "dev-plan",
         "dev-implement",
+        "dev-context",
     }
 
     for source in (ROOT / "skills").glob("**/*"):
@@ -136,6 +137,23 @@ def test_dev_implement_revalidates_history_and_stops_before_end_or_deploy() -> N
     assert "verification_pending" in skill
     assert "히스토리 일치 검수" in contract
     assert "완료 조건별 검수" in contract
+
+
+def test_dev_context_separates_architecture_evidence_and_progress() -> None:
+    skill_root = ROOT / "skills" / "dev-context"
+    skill = (skill_root / "SKILL.md").read_text()
+    contract = (skill_root / "references" / "context-contract.md").read_text()
+
+    assert "desired, configured, deployed, and live" in skill
+    assert "AWS account, region, principal, and checked time" in skill
+    assert "solid Mermaid" in skill
+    assert "dashed" in skill
+    assert "every mapped repository" in skill
+    assert "authoritative denominator" in skill
+    assert "accepted acceptance criteria" in skill
+    assert "read-only" in skill
+    assert "AWS·네트워크·IAM" in contract
+    assert "다음 착수 가능 작업" in contract
 
 
 @pytest.mark.parametrize("damage", ["missing", "changed", "extra"])
