@@ -28,7 +28,14 @@ def test_codex_plugin_exposes_skills_and_history_mcp() -> None:
     assert "work_history" in mcp["mcpServers"]
     assert {
         path.parent.name for path in (plugin_root / "skills").glob("*/SKILL.md")
-    } == {"work-history", "work-research", "work-status", "work-act", "dev-plan"}
+    } == {
+        "work-history",
+        "work-research",
+        "work-status",
+        "work-act",
+        "dev-plan",
+        "dev-implement",
+    }
 
     for source in (ROOT / "skills").glob("**/*"):
         if source.is_file():
@@ -113,6 +120,22 @@ def test_dev_plan_separates_sourced_requirements_from_engineering_proposals() ->
     assert "Do not edit product code" in skill
     assert "요구사항 충돌·질문" in contract
     assert "공수 범위와 근거" in contract
+
+
+def test_dev_implement_revalidates_history_and_stops_before_end_or_deploy() -> None:
+    skill_root = ROOT / "skills" / "dev-implement"
+    skill = (skill_root / "SKILL.md").read_text()
+    contract = (skill_root / "references" / "implementation-contract.md").read_text()
+
+    assert "Invoke `$b-start`" in skill
+    assert "Never invoke `$b-end`" in skill
+    assert "Never invoke `$b-deploy`" in skill
+    assert "accepted acceptance criteria" in skill
+    assert "current repository@SHA" in skill
+    assert "unrelated dirty work" in skill
+    assert "verification_pending" in skill
+    assert "히스토리 일치 검수" in contract
+    assert "완료 조건별 검수" in contract
 
 
 @pytest.mark.parametrize("damage", ["missing", "changed", "extra"])
