@@ -4,6 +4,8 @@ Write in Korean unless requested otherwise. Report observations from the actual 
 
 ```text
 프로젝트·작업: <project> / <work-item key and title>
+입력: <work-item key or Slack thread permalink>
+Slack 연결: <root/replies linked to work item, or 해당 없음>
 개발 상태: blocked | in_progress | verification_pending
 
 착수 기준

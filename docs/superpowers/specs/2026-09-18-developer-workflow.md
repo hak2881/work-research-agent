@@ -7,7 +7,7 @@ Add a developer-facing workflow to Work Research Agent without changing the exis
 ## Commands
 
 - `$dev-plan <PRD, WBS, Slack link, or document>` analyzes requirements, feasibility, effort, dependencies, acceptance criteria, and unresolved questions. It writes sourced planning records but does not edit product code.
-- `$dev-implement <project or work-item key>` implements an approved ready item. For backend work it invokes `$b-start`; it never invokes `$b-end` or `$b-deploy`, merges, or deploys.
+- `$dev-implement <work-item key or Slack permalink>` resolves or plans exactly one approved ready item and implements it. For backend work it invokes `$b-start`; it never invokes `$b-end` or `$b-deploy`, merges, or deploys.
 - `$dev-context <project>` maps the code, runtime, data, integration, AWS, and delivery architecture and reports developer-oriented progress and the next ready work. It does not edit product code or cloud resources.
 
 ## Evidence and state rules

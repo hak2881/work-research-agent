@@ -1,6 +1,6 @@
 ---
 name: dev-implement
-description: Use when a developer must implement one ready, evidence-backed work item while rechecking PRD, Slack, architecture, Git history, accepted criteria, and project history; starts backend work with b-start and stops before PR completion or deployment.
+description: Use when a developer must implement one ready, evidence-backed work item from a work-item key or Slack permalink while rechecking PRD, Slack, architecture, Git history, accepted criteria, and project history; starts backend work with b-start and stops before PR completion or deployment.
 metadata:
   version: 0.1.0
   author: hak2881
@@ -9,9 +9,23 @@ license: MIT
 
 # Dev Implement
 
-Treat the content after `$dev-implement` as a project and work-item key. Implement only that accepted scope, preserve all decisions and verification in `work_history`, and stop before end, merge, or deploy workflows.
+Treat the content after `$dev-implement` as a work-item key or Slack permalink. Implement only one resolved and accepted scope, preserve all decisions and verification in `work_history`, and stop before end, merge, or deploy workflows.
 
 Read [references/implementation-contract.md](references/implementation-contract.md) before changing code.
+
+## Resolve a Slack request
+
+When the input is a Slack permalink:
+
+1. Parse its workspace, channel, message timestamp, and thread timestamp. Fetch the root and every reply, preserving authors, timestamps, permalinks, edits, and reply order. If the connected account cannot read the message or complete thread, block instead of planning from a snippet.
+2. Resolve the project from the thread's customer/store identity, channel context, repository or PR links, participants, and existing project source links. A shared keyword is not enough.
+3. Find work items connected to the root, replies, or thread through exact evidence URIs and `source_links`. Corroborate title similarity with source identity and accepted document versions; never select an item from semantic similarity alone.
+4. Continue directly only when the thread resolves to exactly one `ready` work item. When multiple material candidates remain, return the candidates and ask which scope applies without editing code.
+5. Before creating a work item, audit every same-project work item and current open PR for overlapping outcome, affected system or repository, acceptance criteria, and source versions. If a material candidate lacks an exact source link, do not auto-create or auto-link. Resolve it from evidence or ask the user to choose whether to reuse and link it, supersede or replace it with an event, or create a distinct item with an explicit non-overlap reason.
+6. When no exact or overlapping work item exists, read the bundled planning workflow at [../dev-plan/SKILL.md](../dev-plan/SKILL.md) and its contract, then perform that planning workflow in the same invocation. Persist the Slack source, requirements, estimates, dependencies, acceptance criteria, and created work items. A new item becomes `ready` only when the thread or another authoritative source explicitly establishes the full scope, observable accepted criteria, resolved dependencies, and authority to start; otherwise return the plan or required questions and stop.
+7. After planning or overlap resolution, continue only if it produced exactly one `ready` work item for this thread. Link the thread root and material replies to that item with `history_link_sources` so a repeated invocation resolves the same scope without duplicating it.
+
+Do not post, reply, react, or change anything in Slack. The thread is an input and evidence source only.
 
 ## Revalidate the work item
 

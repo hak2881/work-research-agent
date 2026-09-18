@@ -135,6 +135,12 @@ def test_dev_implement_revalidates_history_and_stops_before_end_or_deploy() -> N
     assert "current repository@SHA" in skill
     assert "unrelated dirty work" in skill
     assert "verification_pending" in skill
+    assert "Slack permalink" in skill
+    assert "root and every reply" in skill
+    assert "exactly one `ready` work item" in skill
+    assert "../dev-plan/SKILL.md" in skill
+    assert "history_link_sources" in skill
+    assert "Do not post" in skill
     assert "히스토리 일치 검수" in contract
     assert "완료 조건별 검수" in contract
 

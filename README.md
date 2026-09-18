@@ -11,7 +11,7 @@ Slack 문의 링크를 받으면 관련 프로젝트와 과거 의사결정을 �
 - `$work-status <프로젝트>`: 저장된 이력과 마지막 근거 이후의 Slack·Git 상태를 확인해 완료·진행 중·차단·미확인 현황을 보고합니다.
 - `$work-act <작업 내용 또는 리서치 결과>`: 실행 가능성과 현재 상태를 재검증한 뒤 Playwright로 앱 설정·세그먼트 생성 등의 작업을 수행하고 결과와 테스트 증거를 보여줍니다. 라이브 반영이나 운영에 영향을 주는 동작은 바로 직전에 최종 확인을 받습니다.
 - `$dev-plan <PRD·WBS·문서>`: 요구사항, 현재 코드, 과거 결정을 교차 검수해 개발 가능성, 공수 범위, 의존성, 완료 조건과 작업 목록을 DB에 기록합니다.
-- `$dev-implement <작업 ID>`: 승인된 작업과 최신 히스토리를 다시 확인하고 백엔드에서는 `$b-start`로 개발을 시작합니다. `$b-end`와 `$b-deploy`는 실행하지 않습니다.
+- `$dev-implement <작업 ID·Slack 링크>`: 전체 Slack 스레드를 프로젝트와 기존 작업에 연결하거나 `$dev-plan` 규칙으로 계획한 뒤, 정확히 하나의 승인된 작업만 `$b-start`로 개발합니다. `$b-end`와 `$b-deploy`는 실행하지 않습니다.
 - `$dev-context <프로젝트>`: 모든 저장소와 PR, 코드 흐름, AWS·Shopify 구조, 개발 진행현황과 다음 착수 가능 작업을 근거와 Mermaid로 정리합니다.
 - 로컬 SQLite + FTS5 MCP: 프로젝트, 작업 근거, 문서 버전, 개발 작업과 상태 이력, 공수, 완료 조건, 아키텍처 스냅샷, 저장소와 커밋을 검색 가능한 형태로 보관합니다.
 - Codex의 기존 Slack, GitHub, Shopify, Playwright 도구를 사용하므로 조사와 답변 생성도 현재 Codex 세션에서 수행됩니다.
@@ -33,7 +33,7 @@ $work-status <프로젝트>
 $work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 $dev-plan <PRD 또는 WBS>
 $dev-context <프로젝트>
-$dev-implement <작업 ID>
+$dev-implement <작업 ID 또는 Slack 링크>
 ```
 
 `$work-history`는 초기 구축 때 한 번 사용합니다. 저장소는 사람 소유가 아니라 식별된 프로젝트를 기준으로 `~/projects/lukuku/<project>/<repository>`에 수집합니다. 이후에는 `$work-research`가 문의를 조사할 때 새로 확인한 근거를 해당 프로젝트 이력에 자동으로 추가합니다.
@@ -56,7 +56,7 @@ Claude Code에서는 다음처럼 실행합니다.
 /work-research-agent:work-research <Slack 링크>
 /work-research-agent:dev-plan <PRD 또는 WBS>
 /work-research-agent:dev-context <프로젝트>
-/work-research-agent:dev-implement <작업 ID>
+/work-research-agent:dev-implement <작업 ID 또는 Slack 링크>
 ```
 
 자세한 내용은 [Claude Code 설치 가이드](docs/claude-code-installation.md)를 참고하세요.

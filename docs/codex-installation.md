@@ -77,10 +77,10 @@ $work-act <작업 내용 또는 리서치 결과>
 ```text
 $dev-plan <PRD·WBS·Slack 링크·문서>
 $dev-context <프로젝트>
-$dev-implement <작업 ID>
+$dev-implement <작업 ID 또는 Slack 링크>
 ```
 
-`dev-implement`는 백엔드 작업에서 `$b-start`까지만 사용합니다. `$b-end`, `$b-deploy`, PR 병합과 배포는 실행하지 않으며 구현 결과를 `verification_pending`으로 남깁니다.
+`dev-implement`에 Slack 링크를 주면 전체 스레드에서 프로젝트와 기존 작업을 찾습니다. 정확한 작업이 없으면 `dev-plan` 규칙으로 작업을 만들고, 중복 작업·PR과 미해결 완료 조건이 없으며 하나의 `ready` 작업으로 확정될 때만 개발합니다. 백엔드에서는 `$b-start`까지만 사용하며 `$b-end`, `$b-deploy`, PR 병합과 배포는 실행하지 않습니다.
 
 Playwright 연결과 대상 계정의 작업 권한이 필요합니다. 현재 상태를 재확인하고 안전한 초안·독립 세그먼트를 준비·검수합니다. 라이브 반영, 앱 설치 권한·과금, 운영 자동화 등에 영향을 주는 동작 직전에는 검수 결과와 정확한 실행 내용을 보여주고 최종 확인을 받습니다. 생성한 객체·설정·테스트 결과·가능한 화면 증거와 이력 저장 여부를 보고합니다.
 
