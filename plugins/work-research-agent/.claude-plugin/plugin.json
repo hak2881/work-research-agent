@@ -1,7 +1,7 @@
 {
   "name": "work-research-agent",
   "description": "Build project history, verify customer requests, and plan, implement, or map development from current evidence.",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "author": {
     "name": "hak2881",
     "url": "https://github.com/hak2881"

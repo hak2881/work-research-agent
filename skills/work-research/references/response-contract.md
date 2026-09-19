@@ -26,7 +26,7 @@ Use this option when the immediate expected outcome can be restored without evid
 A. 재발 방지 관점
 
 고객사에게 답변할 내용
-PM: <재발 가능성과 함께 연관된 처리 과정을 검토한다는 짧고 자연스러운 답변>
+PM: <요청사항을 짧게 정리하고, 근거가 있으면 가능할 것으로 보인다고 말하거나 근거가 부족하면 가능 여부를 검토한 뒤 안내드리겠다고 말하는 답변. 구현 방식이나 확정된 개발 계획은 언급하지 않음>
 
 방안 요약
 - <evidence-backed recurrence-prevention candidate, or 추가 조사 필요>
@@ -54,10 +54,7 @@ PM: <고객이 기대한 동작을 기준으로 현재 확인 결과와 다음 �
 - 미확인: <gap that can change the recommendation, or 없음>
 
 개발자에게 요청할 내용
-- 현재 확인: <verified current behavior and constraint>
-- 권장 방안: <candidate and why it is plausible, or 미정>
-- 꼭 확인할 항목:
-  - <implementation feasibility, better alternative, affected area, or decisive test>
+개발자: <고객사 요청과 핵심 확인 결과 또는 미확인 사항>. <선택: 넓은 수준의 후보>도 가능할 것 같은데, 이 방향을 포함해 적절한 작업 방안을 검토 부탁드립니다.
 
 확인 근거
 - <fact> — <short source label or link, verification level, checked time>
@@ -84,7 +81,7 @@ Use the developer section only when code changes are likely, current code behavi
 
 ```text
 고객사에게 답변할 내용
-PM: <검수 후 바로 보낼 수 있는 concise answer; no internal tools, SHAs, access errors, or DB details>
+PM: <고객사 요청을 짧게 정리. 근거가 충분하면 `현재 확인 기준으로는 가능할 것으로 보입니다.`라고 표현. 부족하면 `가능 여부를 검토한 뒤 안내드리겠습니다.`라고 표현. 구현 방식이나 확정된 개발 계획은 언급하지 않음>
 
 핵심 판단
 - 확인: <the smallest set of facts that determines the answer>
@@ -96,11 +93,7 @@ PM: <검수 후 바로 보낼 수 있는 concise answer; no internal tools, SHAs
 - 대상: <affected repositories, code paths, or platform surfaces | 해당 없음 | 미확인>
 
 개발자에게 요청할 내용
-- 현재 확인: <verified behavior and evidence boundary>
-- 권장 방안과 근거: <one evidence-backed candidate, or 미정>
-- 꼭 확인할 항목:
-  - <feasibility or a better approach>
-  - <affected surface or decisive verification scenario>
+개발자: <고객사 요청과 핵심 확인 결과 또는 미확인 사항>. <선택: 넓은 수준의 후보>도 가능할 것 같은데, 이 방향을 포함해 적절한 작업 방안을 검토 부탁드립니다.
 
 확인 근거
 - <fact> — <short source label or link, verification level, checked time>
@@ -122,25 +115,27 @@ Always include `구현 영역`, even when the developer section is omitted. Use 
 
 Base the classification on traced behavior and affected code or platform surfaces. A visible UI symptom alone does not establish a frontend-only implementation. Shopify Admin work alone does not establish backend implementation. In mode 1, classify A and B independently and allow different labels. Name the affected repositories and code paths when verified; otherwise name the platform surface or the decisive missing check.
 
-## Developer recommendation rules
+## Audience wording rules
 
-The developer message must distinguish verified current behavior from a proposed implementation. Present the recommended approach as a candidate for developer review, not an approved design. Give one recommendation, its evidence boundary, and only the checks that can change the decision. Ask whether the approach has 구현 가능성 and whether a 더 적합한 방안 exists; end the request naturally with `검수 부탁드립니다.` Do not present a proposal as an approved requirement or completed work.
+The developer message is a short handoff, not an implementation specification. It tells the developer what the customer requested, the one current fact or uncertainty that matters, and optionally a broad candidate framed as `이런 방향도 가능할 것 같은데`. End by asking the developer to consider an appropriate work approach. Do not include code paths, file or function names, step-by-step changes, architecture, detailed data flow, edge-case matrices, or test plans in this sendable message. Put necessary technical proof in `구현 영역` or `확인 근거` instead.
+
+The customer message summarizes the request, confirmed outcome, and next review from the PM's perspective. Never promise implementation, commit to a technical design, or explain code-level mechanics. Say `현재 확인 기준으로는 가능할 것으로 보입니다.` only when evidence supports likely feasibility. Otherwise say `가능 여부를 검토한 뒤 안내드리겠습니다.` If developer confirmation remains, describe it as internal review rather than an agreed implementation plan.
 
 When no responsible candidate is supported by current code, platform, configuration, or runtime evidence, use this fallback:
 
 ```text
 권장 방안: 미정
 확인 필요: <missing evidence, conflicting decision, or inaccessible path>
-개발자: 현재 근거만으로는 구현 방향을 제안하기 어렵습니다. 구현 가능성과 더 적합한 방안이 있는지 검수 부탁드립니다.
+개발자: 고객사에서 <요청사항>을 요청하셨습니다. 현재는 <핵심 미확인 사항> 확인이 필요해 보이는데, 적절한 작업 방안을 검토 부탁드립니다.
 ```
 
 Do not imply feasibility merely to fill the template. This fallback also applies to mode 1 option A whenever root-cause or recurrence evidence is missing.
 
 ## Brevity and truthfulness rules
 
-- The PM paragraph should state the conclusion, required customer information, and next review in one compact paragraph. Do not copy the internal investigation into it.
+- The PM paragraph should state the request, supported level of feasibility, required customer information, and next review in one compact paragraph. Do not copy the internal investigation or implementation proposal into it.
 - `핵심 판단` contains only facts and gaps that change the response or recommendation.
-- `꼭 확인할 항목` contains only developer checks that can change feasibility, design, risk, or acceptance. Do not turn every observed detail into a checklist.
+- The developer handoff contains no checklist. Keep detailed developer checks in the internal evidence only when they change feasibility, risk, or acceptance.
 - `확인 근거` groups evidence by decision. Combine facts from the same source when no important distinction is lost.
 - `검수 정보` summarizes freshness. Detailed Git or tool logs appear only when a failure changes confidence or leaves state behind. On successful history persistence, say nothing. When persistence failure affects continuity or confidence, add one internal line: `내부 이력 저장 실패: <reason and effect>`.
 - Do not include an effort, cost, staffing, or delivery estimate in either audience's response. If one was requested, say after the factual findings that a separate development plan is required and point to `$dev-plan <same Slack permalink>`.

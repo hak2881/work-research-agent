@@ -150,12 +150,24 @@ def test_work_research_requests_developer_review_without_estimating_effort() -> 
     assert "hours, days, story points, cost, staffing, or delivery dates" in skill
     assert "route the estimate request to `$dev-plan`" in skill
     assert "권장 방안" in contract
-    assert "더 적합한 방안" in contract
-    assert "구현 가능성" in contract
-    assert "검수 부탁드립니다" in contract
-    assert "candidate for developer review, not an approved design" in contract
+    assert "적절한 작업 방안을 검토 부탁드립니다" in contract
+    assert "not an implementation specification" in contract
     assert "권장 방안: 미정" in contract
     assert "Do not imply feasibility merely to fill the template" in contract
+
+
+def test_work_research_keeps_pm_and_developer_messages_non_committal() -> None:
+    skill_root = ROOT / "skills" / "work-research"
+    skill = (skill_root / "SKILL.md").read_text()
+    contract = (skill_root / "references" / "response-contract.md").read_text()
+
+    assert "brief sendable handoff, not a technical design" in skill
+    assert "Do not include file names, line numbers, code-level steps" in skill
+    assert "Do not tell the customer how the feature will be implemented" in skill
+    assert "가능할 것으로 보입니다" in contract
+    assert "가능 여부를 검토한 뒤 안내드리겠습니다" in contract
+    assert "Never promise implementation" in contract
+    assert "꼭 확인할 항목:" not in contract
 
 
 def test_work_research_output_is_customer_first_and_hides_routine_mechanics() -> None:
@@ -165,7 +177,8 @@ def test_work_research_output_is_customer_first_and_hides_routine_mechanics() ->
 
     assert "Customer response comes first" in contract
     assert "핵심 판단" in contract
-    assert "꼭 확인할 항목" in contract
+    assert "개발자에게 요청할 내용" in contract
+    assert "short handoff, not an implementation specification" in contract
     assert "확인 완료 (`verified`)" in contract
     assert "부분 확인 (`partially verified`)" in contract
     assert "확인 불가 (`blocked`)" in contract
