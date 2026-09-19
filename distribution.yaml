@@ -1,5 +1,5 @@
 name: work-research-agent
-version: 0.7.1
+version: 0.7.2
 description: "Evidence-backed PM research and developer workflows from Slack, Git, code, AWS, and Shopify"
 hermes_requires: ">=0.12.0"
 author: "hak2881"

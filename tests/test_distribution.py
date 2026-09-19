@@ -158,6 +158,26 @@ def test_work_research_requests_developer_review_without_estimating_effort() -> 
     assert "Do not imply feasibility merely to fill the template" in contract
 
 
+def test_work_research_output_is_customer_first_and_hides_routine_mechanics() -> None:
+    skill_root = ROOT / "skills" / "work-research"
+    skill = (skill_root / "SKILL.md").read_text()
+    contract = (skill_root / "references" / "response-contract.md").read_text()
+
+    assert "Customer response comes first" in contract
+    assert "핵심 판단" in contract
+    assert "꼭 확인할 항목" in contract
+    assert "확인 완료 (`verified`)" in contract
+    assert "부분 확인 (`partially verified`)" in contract
+    assert "확인 불가 (`blocked`)" in contract
+    assert "Do not print an estimate section when no estimate was requested" in skill
+    assert "routine Git transport" in skill
+    assert "memory-file" in skill
+    assert "answer-changing" in skill
+    assert "Customer-facing text must not generalize" in contract
+    assert "내부 이력 저장 실패" in contract
+    assert "이력: 저장 완료" not in contract
+
+
 def test_codex_docs_use_skill_invocation_syntax() -> None:
     readme = (ROOT / "README.md").read_text()
 
