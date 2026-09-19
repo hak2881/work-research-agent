@@ -17,7 +17,7 @@ A. 재발 방지 관점
 PM: <문의한 현상과 함께 동일 유형의 문제가 반복되지 않도록 연관된 처리 과정도 검토한다는 자연스러운 답변>
 
 개발자에게 요청할 내용
-개발자: <검증된 현재 동작, 직접 원인, 재발 근거와 가능한 해결 방향을 구분하고 검수를 요청하는 내용>
+개발자: 현재 확인된 원인과 영향 기준으로 <권장 방안>을 우선 검토할 수 있을 것으로 보입니다. <근거와 제약>을 확인했으며, 구현 가능성과 더 적합한 방안이 있는지 영향 범위 및 검수 시나리오와 함께 검수 부탁드립니다.
 
 적용 근거
 - 확인된 원인: <directly verified cause or 미확인>
@@ -25,6 +25,8 @@ PM: <문의한 현상과 함께 동일 유형의 문제가 반복되지 않도�
 - 예상 영향 범위: <components/data/operations with evidence>
 - 완료 조건: <observable checks>
 ```
+
+When the root cause or recurrence evidence is missing, do not fill the recommendation placeholder. Use the unsupported-candidate fallback defined below.
 
 ### B. 현재 요청 관점
 
@@ -37,7 +39,7 @@ B. 현재 요청 관점
 PM: <문의한 상황에서 기대한 동작이 정상적으로 이루어질 수 있도록 현재 동작과 필요한 변경사항을 검수한다는 자연스러운 답변>
 
 개발자에게 요청할 내용
-개발자: <고객이 제시한 발생 조건, 현재 동작, 기대 결과, 필요한 변경 방향과 검수 시나리오>
+개발자: 현재 확인된 발생 조건과 기대 결과 기준으로 <권장 방안>을 적용할 수 있을 것으로 보입니다. <근거와 제약>을 확인했으며, 구현 가능성과 더 적합한 방안이 있는지 영향 범위 및 검수 시나리오와 함께 검수 부탁드립니다.
 
 적용 근거
 - 발생 조건: <verified trigger>
@@ -78,10 +80,12 @@ Use the dual-audience format when code changes are likely, the current code beha
 
 ```text
 개발자에게 요청할 내용
-개발자: <고객이 제시한 발생 조건과 기대 동작, 확인된 현재 동작, 필요한 변경 방향을 설명하고 검수를 요청하는 내용>
+개발자: 현재 확인 기준으로 <권장 방안>을 적용할 수 있을 것으로 보입니다. <확인된 현재 동작과 제약>을 근거로 제안드리며, 구현 가능성과 더 적합한 방안이 있는지 영향 범위 및 검수 시나리오와 함께 검수 부탁드립니다.
 
 확인할 사항
-- <관련 코드 경로, 제약, 데이터, 설정, 배포 여부 또는 검수 시나리오>
+- 확인된 현재 동작: <repository@SHA or platform evidence>
+- 권장 방안과 근거: <evidence-backed candidate>
+- 개발자 검수 요청: <feasibility, better alternative, affected area, test scenario>
 
 고객사에게 답변할 내용
 PM: <문의한 상황과 기대 동작을 기준으로 현재 동작과 필요한 변경사항을 검수한 뒤 안내한다는 자연스러운 답변>
@@ -104,6 +108,18 @@ When developer review is unnecessary, omit the developer section and start with 
 
 ## Shared truthfulness rules
 
-The developer message must distinguish verified current behavior from a proposed implementation. Prefer language such as `현재 코드 기준으로 <방식>으로 구현할 수 있을 것으로 보입니다. <확인할 사항> 검수 부탁드립니다.` Do not present a proposal as an approved requirement or completed work.
+The developer message must distinguish verified current behavior from a proposed implementation. Present the recommended approach as a candidate for developer review, not an approved design. Explain its evidence and constraints, then explicitly ask whether it is implementable and whether a better approach exists. Do not present a proposal as an approved requirement or completed work.
+
+When no responsible candidate is supported by current code, platform, configuration, or runtime evidence, use this fallback instead of recommendation language:
+
+```text
+권장 방안: 미정
+확인 필요: <missing evidence, conflicting decision, or inaccessible path>
+개발자: 현재 근거만으로는 구현 방향을 제안하기 어렵습니다. 구현 가능성과 더 적합한 방안이 있는지 검수 부탁드립니다.
+```
+
+Do not imply feasibility merely to fill the template. This fallback also applies to mode 1 option A whenever root-cause or recurrence evidence is missing.
+
+Do not include an effort, cost, staffing, or delivery estimate in either audience's response. If one was requested, say that it requires a separate development plan and point to `$dev-plan <same Slack permalink>` after the factual findings.
 
 The customer message must avoid promising feasibility, schedule, scope, or completion before the required review. Use `verified` only when every material claim has direct or corroborated evidence and no unresolved conflict changes the answer. Use `partially verified` when the draft is useful but a bounded claim remains uncertain. Use `blocked` when missing access or identity prevents a responsible answer.

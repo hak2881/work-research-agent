@@ -2,7 +2,7 @@
 name: work-research
 description: Investigate a Slack customer request against project history, Git, code, Shopify, and browser evidence, then draft a PM answer without posting it.
 metadata:
-  version: 0.4.2
+  version: 0.5.0
   author: hak2881
 license: MIT
 ---
@@ -33,6 +33,12 @@ Read [references/research-routing.md](references/research-routing.md) for source
 10. Run a contradiction check: compare each draft against the original request, later thread replies, stored decisions, current code, and fresh platform evidence. In mode 1, verify that the two answers represent genuinely different evidence-backed scopes; do not manufacture a structural alternative.
 11. Persist newly verified request, decision, implementation, verification, delivery, source-link, and explicit open-item evidence so the local history grows incrementally.
 12. Return the draft and the word-based actions defined by the response contract. Do not execute clipboard or external-post actions unless the host supports them and the user selects one.
+
+## Developer review and estimate boundary
+
+When developer confirmation is required, provide one evidence-backed recommended approach rather than only forwarding the customer's question. Separate verified current behavior from the recommendation, explain why the approach is plausible, and ask the developer to verify implementation feasibility, affected areas, test conditions, and whether a better approach exists. The recommendation is not an approved design or permission to implement. When current evidence does not support a responsible candidate, set `권장 방안: 미정`, name the missing evidence or decision, and ask the developer to assess feasibility or propose a better approach without implying that an implementation is already possible.
+
+Do not estimate effort in `$work-research`. Do not calculate, infer, validate, or repeat an estimate in hours, days, story points, cost, staffing, or delivery dates. When the request includes an estimate or schedule question, finish the factual research, state that development planning is required, and route the estimate request to `$dev-plan` with the same Slack link and verified context. Do not invoke `$dev-plan` automatically or promise a schedule in the customer-facing answer.
 
 ## Execution handoff
 

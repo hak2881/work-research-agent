@@ -141,6 +141,23 @@ def test_work_research_checks_current_remote_default_branch_code() -> None:
     assert "CodeGraph index corresponds to the inspected SHA" in routing
 
 
+def test_work_research_requests_developer_review_without_estimating_effort() -> None:
+    skill_root = ROOT / "skills" / "work-research"
+    skill = (skill_root / "SKILL.md").read_text()
+    contract = (skill_root / "references" / "response-contract.md").read_text()
+
+    assert "Do not estimate effort" in skill
+    assert "hours, days, story points, cost, staffing, or delivery dates" in skill
+    assert "route the estimate request to `$dev-plan`" in skill
+    assert "권장 방안" in contract
+    assert "더 적합한 방안" in contract
+    assert "구현 가능성" in contract
+    assert "검수 부탁드립니다" in contract
+    assert "candidate for developer review, not an approved design" in contract
+    assert "권장 방안: 미정" in contract
+    assert "Do not imply feasibility merely to fill the template" in contract
+
+
 def test_codex_docs_use_skill_invocation_syntax() -> None:
     readme = (ROOT / "README.md").read_text()
 
