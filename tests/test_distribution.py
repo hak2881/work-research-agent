@@ -178,6 +178,19 @@ def test_work_research_output_is_customer_first_and_hides_routine_mechanics() ->
     assert "이력: 저장 완료" not in contract
 
 
+def test_work_research_classifies_implementation_area_in_both_modes() -> None:
+    skill_root = ROOT / "skills" / "work-research"
+    skill = (skill_root / "SKILL.md").read_text()
+    contract = (skill_root / "references" / "response-contract.md").read_text()
+
+    assert "프론트엔드 | 백엔드 | 공동 | 개발 불필요 | 미확인" in contract
+    assert "Mode 1 must classify each option separately" in skill
+    assert "Do not infer the area from the channel" in skill
+    assert "Shopify Admin configuration" in skill
+    assert "affected repositories and code paths" in skill
+    assert contract.count("구현 영역") >= 3
+
+
 def test_codex_docs_use_skill_invocation_syntax() -> None:
     readme = (ROOT / "README.md").read_text()
 

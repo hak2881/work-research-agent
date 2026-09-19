@@ -2,7 +2,7 @@
 name: work-research
 description: Investigate a Slack customer request against project history, Git, code, Shopify, and browser evidence, then draft a PM answer without posting it.
 metadata:
-  version: 0.6.0
+  version: 0.7.0
   author: hak2881
 license: MIT
 ---
@@ -29,7 +29,7 @@ Read [references/research-routing.md](references/research-routing.md) for source
 6. Route each claim using [references/research-routing.md](references/research-routing.md). Inspect fresh sources for facts that may have changed. When an existing linked attachment, document, export, archive, or other file is already available through the current access and is needed to understand or verify the request, download it without asking for separate confirmation and inspect it according to the routing rules.
 7. Build a claim ledger. For each material sentence in the proposed answer, record supporting evidence, verification level, confidence, and conflicts. Also separate the observed symptom, immediate cause, root cause, recurrence evidence, blast radius, and unresolved assumptions.
 8. Treat a root cause as established only when it was directly reproduced or traced end-to-end through current code, data, configuration, or runtime evidence. A similar historical symptom is not root-cause evidence for the current request. Static proximity, shared keywords, and an older fix may guide investigation but cannot justify a causal claim or a broader change.
-9. Decide whether code changes or developer confirmation are required, then draft the selected mode from [references/response-contract.md](references/response-contract.md). Include repository and SHA for code conclusions and observation time for browser/Admin conclusions.
+9. Decide whether code changes or developer confirmation are required. Classify the implementation area using the rules below, then draft the selected mode from [references/response-contract.md](references/response-contract.md). Include repository and SHA for code conclusions and observation time for browser/Admin conclusions.
 10. Run a contradiction check: compare each draft against the original request, later thread replies, stored decisions, current code, and fresh platform evidence. In mode 1, verify that the two answers represent genuinely different evidence-backed scopes; do not manufacture a structural alternative.
 11. Persist newly verified request, decision, implementation, verification, delivery, source-link, and explicit open-item evidence so the local history grows incrementally.
 12. Return the draft and the word-based actions defined by the response contract. Do not execute clipboard or external-post actions unless the host supports them and the user selects one.
@@ -39,6 +39,18 @@ Read [references/research-routing.md](references/research-routing.md) for source
 When developer confirmation is required, provide one evidence-backed recommended approach rather than only forwarding the customer's question. Separate verified current behavior from the recommendation, explain why the approach is plausible, and ask the developer to verify implementation feasibility, affected areas, test conditions, and whether a better approach exists. The recommendation is not an approved design or permission to implement. When current evidence does not support a responsible candidate, set `권장 방안: 미정`, name the missing evidence or decision, and ask the developer to assess feasibility or propose a better approach without implying that an implementation is already possible.
 
 Do not estimate effort in `$work-research`. Do not calculate, infer, validate, or repeat an estimate in hours, days, story points, cost, staffing, or delivery dates. When the request includes an estimate or schedule question, finish the factual research, state that development planning is required, and route the estimate request to `$dev-plan` with the same Slack link and verified context. Do not invoke `$dev-plan` automatically or promise a schedule in the customer-facing answer.
+
+## Implementation-area classification
+
+Every result in mode 1 and mode 2 must state one of these labels with a short evidence-based reason and the affected repositories and code paths or platform surfaces:
+
+- `프론트엔드`: only client, storefront theme, UI, or browser-side code must change.
+- `백엔드`: only server, API, job, webhook, Shopify Function, data, or infrastructure code must change.
+- `공동`: both frontend and backend changes or coordination are required for the requested behavior.
+- `개발 불필요`: configuration, content, Shopify Admin, or another operational action is sufficient without a code change.
+- `미확인`: available evidence cannot responsibly determine the implementation area.
+
+Mode 1 must classify each option separately because the recurrence-prevention option and current-request option can affect different areas. Mode 2 classifies the requested solution once. Do not infer the area from the channel, requester, repository name, or the fact that the visible symptom is in the UI. Shopify Admin configuration, content editing, or app setup is not backend implementation unless backend code must actually change. When a UI change depends on new or changed API, server, Function, or data behavior, classify it as `공동`. If access or evidence is missing, use `미확인` and name the decisive check instead of forcing a frontend or backend label.
 
 ## Readable output
 

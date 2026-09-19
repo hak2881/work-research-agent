@@ -31,6 +31,9 @@ PM: <재발 가능성과 함께 연관된 처리 과정을 검토한다는 짧�
 방안 요약
 - <evidence-backed recurrence-prevention candidate, or 추가 조사 필요>
 
+구현 영역: <프론트엔드 | 백엔드 | 공동 | 개발 불필요 | 미확인>
+- 근거: <why this area applies and the affected repositories, code paths, or platform surfaces>
+
 B. 현재 요청 관점
 
 고객사에게 답변할 내용
@@ -38,6 +41,9 @@ PM: <고객이 기대한 동작을 기준으로 현재 확인 결과와 다음 �
 
 방안 요약
 - <evidence-backed current-request candidate>
+
+구현 영역: <프론트엔드 | 백엔드 | 공동 | 개발 불필요 | 미확인>
+- 근거: <why this area applies and the affected repositories, code paths, or platform surfaces>
 
 권장안: A | B | 추가 조사 필요
 권장 근거
@@ -84,6 +90,11 @@ PM: <검수 후 바로 보낼 수 있는 concise answer; no internal tools, SHAs
 - 확인: <the smallest set of facts that determines the answer>
 - 미확인: <only a gap that can change the answer, or 없음>
 
+구현 영역
+- 판정: <프론트엔드 | 백엔드 | 공동 | 개발 불필요 | 미확인>
+- 근거: <why this area applies>
+- 대상: <affected repositories, code paths, or platform surfaces | 해당 없음 | 미확인>
+
 개발자에게 요청할 내용
 - 현재 확인: <verified behavior and evidence boundary>
 - 권장 방안과 근거: <one evidence-backed candidate, or 미정>
@@ -104,6 +115,12 @@ PM: <검수 후 바로 보낼 수 있는 concise answer; no internal tools, SHAs
 ```
 
 When developer review is unnecessary, omit that section. If the requested approach creates a material data, payment, inventory, security, compliance, or operational risk, disclose the constraint even in mode 2.
+
+## Implementation-area rules
+
+Always include `구현 영역`, even when the developer section is omitted. Use `프론트엔드` for client, storefront theme, UI, or browser-only changes; `백엔드` for server, API, job, webhook, Shopify Function, data, or infrastructure code changes; and `공동` when both sides must change or coordinate. Use `개발 불필요` when Shopify Admin configuration, content editing, app setup, or another operational action is sufficient without code. Use `미확인` when current evidence cannot determine the area.
+
+Base the classification on traced behavior and affected code or platform surfaces. A visible UI symptom alone does not establish a frontend-only implementation. Shopify Admin work alone does not establish backend implementation. In mode 1, classify A and B independently and allow different labels. Name the affected repositories and code paths when verified; otherwise name the platform surface or the decisive missing check.
 
 ## Developer recommendation rules
 
