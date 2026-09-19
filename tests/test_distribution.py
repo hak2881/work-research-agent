@@ -36,6 +36,7 @@ def test_codex_plugin_exposes_skills_and_history_mcp() -> None:
         "work-research",
         "work-prd",
         "work-wbs",
+        "work-policy",
         "work-status",
         "work-act",
         "dev-plan",
@@ -45,7 +46,7 @@ def test_codex_plugin_exposes_skills_and_history_mcp() -> None:
     }
 
     for source in (ROOT / "skills").glob("**/*"):
-        if source.is_file():
+        if source.is_file() and "__pycache__" not in source.parts and source.suffix != ".pyc":
             relative = source.relative_to(ROOT / "skills")
             assert source.read_bytes() == (plugin_root / "skills" / relative).read_bytes()
 
@@ -284,6 +285,25 @@ def test_work_wbs_uses_verified_plan_and_ships_standard_assets() -> None:
         "scripts/render_wbs.py",
     ):
         assert (skill_root / asset).is_file()
+
+
+def test_work_policy_ships_the_lukuku_markdown_standard_and_validator() -> None:
+    skill_root = ROOT / "skills" / "work-policy"
+    skill = (skill_root / "SKILL.md").read_text()
+    template = skill_root / "references" / "lukuku-policy-template-v1.0.md"
+    contract = (skill_root / "references" / "policy-contract.md").read_text()
+    resolution = (skill_root / "references" / "source-resolution.md").read_text()
+    validator = skill_root / "scripts" / "validate_policy.py"
+
+    assert "$work-policy <Slack permalink>" in skill
+    assert "history_record_policy_snapshot" in skill
+    assert "Do not infer policy from current code" in skill
+    assert template.is_file()
+    assert validator.is_file()
+    assert "## 1. 회원" in template.read_text()
+    assert "## 8. 정산 및 회계" in template.read_text()
+    assert "no_confirmed_policy" in contract
+    assert "Customer silence is not agreement" in resolution
 
 
 def test_work_research_incrementally_persists_new_history() -> None:

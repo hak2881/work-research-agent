@@ -33,6 +33,7 @@ ACCEPTANCE_STATUSES = {"proposed", "accepted", "rejected", "verified"}
 WBS_ITEM_TYPES = {"task", "milestone"}
 WBS_STATUSES = {"예정", "진행 중", "확인 대기", "완료", "보류"}
 SCHEDULE_BASES = {"confirmed", "planned", "proposed", "unknown"}
+POLICY_STATES = {"agreed", "no_confirmed_policy", "not_applicable"}
 
 
 def _now() -> str:
@@ -270,6 +271,22 @@ class HistoryStore:
                 captured_at TEXT NOT NULL,
                 UNIQUE(project_id, wbs_document_key, work_item_key),
                 UNIQUE(project_id, wbs_document_key, display_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS policy_document_snapshots (
+                id INTEGER PRIMARY KEY,
+                project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+                policy_document_key TEXT NOT NULL,
+                policy_key TEXT NOT NULL,
+                area TEXT NOT NULL,
+                title TEXT NOT NULL DEFAULT '',
+                body_markdown TEXT NOT NULL,
+                policy_state TEXT NOT NULL,
+                effective_from TEXT,
+                reviewed_at TEXT NOT NULL,
+                authority_evidence_id INTEGER REFERENCES evidence(id) ON DELETE SET NULL,
+                captured_at TEXT NOT NULL,
+                UNIQUE(project_id, policy_document_key, policy_key)
             );
 
             CREATE TABLE IF NOT EXISTS architecture_snapshots (
@@ -925,6 +942,112 @@ class HistoryStore:
         ).fetchall()
         return [self._wbs_schedule_dict(row) for row in stored]
 
+    def record_policy_snapshot(
+        self,
+        project_slug: str,
+        policy_document_key: str,
+        rows: list[dict[str, Any]],
+        *,
+        captured_at: str | None = None,
+    ) -> list[dict[str, Any]]:
+        if not rows:
+            raise ValueError("policy snapshot requires at least one row")
+        project = self._project(project_slug)
+        document = self.connection.execute(
+            """
+            SELECT id, document_type FROM project_documents
+            WHERE project_id = ? AND external_key = ?
+            """,
+            (project["id"], policy_document_key),
+        ).fetchone()
+        if document is None:
+            raise ValueError(f"unknown policy document: {policy_document_key}")
+        if document["document_type"] != "policy":
+            raise ValueError(f"document is not a policy: {policy_document_key}")
+        existing = self.connection.execute(
+            """
+            SELECT 1 FROM policy_document_snapshots
+            WHERE project_id = ? AND policy_document_key = ? LIMIT 1
+            """,
+            (project["id"], policy_document_key),
+        ).fetchone()
+        if existing is not None:
+            raise ValueError(f"policy document already has policy rows: {policy_document_key}")
+
+        keys = [str(row.get("policy_key", "")).strip() for row in rows]
+        if len(set(keys)) != len(keys):
+            raise ValueError("duplicate policy key in policy snapshot")
+
+        validated: list[dict[str, Any]] = []
+        for row in rows:
+            policy_key = str(row.get("policy_key", "")).strip()
+            area = str(row.get("area", "")).strip()
+            title = str(row.get("title", "")).strip()
+            body = str(row.get("body_markdown", "")).strip()
+            state = str(row.get("policy_state", "")).strip()
+            reviewed_at = str(row.get("reviewed_at", "")).strip()
+            evidence_id = row.get("authority_evidence_id")
+            if not policy_key or not area or not body or not reviewed_at:
+                raise ValueError("policy key, area, body, and review date are required")
+            if state not in POLICY_STATES:
+                raise ValueError(f"invalid policy state: {state}")
+            if state == "agreed" and not title:
+                raise ValueError("agreed policy requires a title")
+            if state in {"agreed", "not_applicable"} and evidence_id is None:
+                raise ValueError(f"{state} policy requires authoritative evidence")
+            if evidence_id is not None:
+                evidence = self.connection.execute(
+                    "SELECT 1 FROM evidence WHERE id = ? AND project_id = ?",
+                    (evidence_id, project["id"]),
+                ).fetchone()
+                if evidence is None:
+                    raise ValueError(f"unknown authoritative evidence: {evidence_id}")
+            validated.append(
+                {
+                    **row,
+                    "policy_key": policy_key,
+                    "area": area,
+                    "title": title,
+                    "body_markdown": body,
+                    "policy_state": state,
+                    "reviewed_at": reviewed_at,
+                }
+            )
+
+        timestamp = captured_at or _now()
+        with self.connection:
+            for row in validated:
+                self.connection.execute(
+                    """
+                    INSERT INTO policy_document_snapshots(
+                        project_id, policy_document_key, policy_key, area, title,
+                        body_markdown, policy_state, effective_from, reviewed_at,
+                        authority_evidence_id, captured_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        project["id"],
+                        policy_document_key,
+                        row["policy_key"],
+                        row["area"],
+                        row["title"],
+                        row["body_markdown"],
+                        row["policy_state"],
+                        row.get("effective_from"),
+                        row["reviewed_at"],
+                        row.get("authority_evidence_id"),
+                        timestamp,
+                    ),
+                )
+        stored = self.connection.execute(
+            """
+            SELECT * FROM policy_document_snapshots
+            WHERE project_id = ? AND policy_document_key = ? ORDER BY area, policy_key
+            """,
+            (project["id"], policy_document_key),
+        ).fetchall()
+        return [dict(row) for row in stored]
+
     def record_architecture_snapshot(
         self,
         project_slug: str,
@@ -1287,6 +1410,21 @@ class HistoryStore:
                 (project["id"],),
             ).fetchall()
         ]
+        policy_snapshots = [
+            dict(row)
+            for row in self.connection.execute(
+                """
+                SELECT policy.*
+                FROM policy_document_snapshots policy
+                JOIN project_documents document
+                  ON document.project_id = policy.project_id
+                 AND document.external_key = policy.policy_document_key
+                WHERE policy.project_id = ?
+                ORDER BY document.captured_at DESC, policy.area, policy.policy_key
+                """,
+                (project["id"],),
+            ).fetchall()
+        ]
         return {
             "project": dict(project),
             "evidence": evidence,
@@ -1297,4 +1435,5 @@ class HistoryStore:
             "work_items": work_items,
             "architecture_snapshots": architecture_snapshots,
             "wbs_schedule_snapshots": wbs_schedule_snapshots,
+            "policy_snapshots": policy_snapshots,
         }

@@ -1,7 +1,7 @@
 {
   "name": "work-research-agent",
-  "description": "Build project history, verify requests, author LUKUKU-standard PRDs and WBS schedules, and run developer workflows from current evidence.",
-  "version": "0.9.0",
+  "description": "Build project history, verify requests, author LUKUKU-standard PRDs, WBS schedules, and policy documents, and run developer workflows from current evidence.",
+  "version": "0.10.0",
   "author": {
     "name": "hak2881",
     "url": "https://github.com/hak2881"

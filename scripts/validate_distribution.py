@@ -54,6 +54,7 @@ def main() -> None:
         "work-research",
         "work-prd",
         "work-wbs",
+        "work-policy",
         "work-status",
         "work-act",
         "dev-plan",
@@ -61,7 +62,7 @@ def main() -> None:
         "dev-context",
         "dev-pr",
     }:
-        raise ValueError("the six work skills and four dev skills are required")
+        raise ValueError("the seven work skills and four dev skills are required")
     for path in skill_paths:
         metadata = load_skill(path)
         name = metadata.get("name")
@@ -75,8 +76,16 @@ def main() -> None:
 
     source_root = ROOT / "skills"
     plugin_root = ROOT / "plugins" / "work-research-agent" / "skills"
-    source_files = {path.relative_to(source_root) for path in source_root.rglob("*") if path.is_file()}
-    plugin_files = {path.relative_to(plugin_root) for path in plugin_root.rglob("*") if path.is_file()}
+    source_files = {
+        path.relative_to(source_root)
+        for path in source_root.rglob("*")
+        if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc"
+    }
+    plugin_files = {
+        path.relative_to(plugin_root)
+        for path in plugin_root.rglob("*")
+        if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc"
+    }
     if source_files != plugin_files:
         raise ValueError("source and packaged skill files must match")
     for relative in source_files:

@@ -29,11 +29,11 @@ Do not post, reply, react, or change anything in Slack. The thread is an input a
 
 ## Revalidate the work item
 
-1. Resolve the project and load the work item, document versions, events, dependencies, estimates, accepted acceptance criteria, architecture snapshots, repositories, and linked evidence from `history_project_context`.
+1. Resolve the project and load the work item, document versions, current policy snapshots, events, dependencies, estimates, accepted acceptance criteria, architecture snapshots, repositories, and linked evidence from `history_project_context`.
 2. Require state `ready`, completed prerequisites, and accepted acceptance criteria that are observable enough to determine success without inventing product policy. For retry work, retryable failure classes, duplicate-side-effect or idempotency behavior, bounded exhaustion, and terminal failure handling must each be accepted or explicitly excluded before implementation. Proposed criteria and a prior `ready` state are not approval of newly changed scope. If these conditions fail, record a blocker and return to `$dev-plan <work-item key>`.
 3. Refresh every material source. Read the current PRD/WBS version and complete relevant Slack threads. Search after explicit per-source coverage checkpoints; without a checkpoint, search all accessible project-relevant history and record the checked-through range.
 4. For every affected repository, verify its normalized remote, run `git fetch --prune`, and record the fetched default-branch SHA, current repository@SHA, branch/upstream, dirty state, and observation time. Use CodeGraph first to trace the affected path and impact when available.
-5. Compare current sources and code with the accepted plan. A superseding requirement, conflicting architecture, missing access, or ambiguous SQS/EventBridge-like choice blocks implementation. Record the evidence and state transition instead of choosing an interpretation.
+5. Compare current sources, agreed policy, and code with the accepted plan. A superseding requirement, policy conflict, conflicting architecture, missing access, or ambiguous SQS/EventBridge-like choice blocks implementation. Record the evidence and state transition instead of choosing an interpretation.
 
 Treat a planning HTML report as a derived navigation artifact, not an authoritative source. Use it to locate decisions and evidence, then recheck the accepted original document versions, Slack decisions, criteria, and current code before editing. If the report conflicts with an original source or omits a decision that changes implementation, return to `$dev-plan` instead of silently following the report.
 

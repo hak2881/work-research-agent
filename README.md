@@ -10,13 +10,14 @@ Slack 문의 링크를 받으면 관련 프로젝트와 과거 의사결정을 �
 - `$work-research [1|2] <Slack 링크>`: 관련 이력과 현재 근거를 다시 검사합니다. 고객사 답변에는 요청과 검토 상태만 정리하고 구현 방식을 확정하지 않습니다. 개발자 전달문은 요청·핵심 확인 사항·넓은 후보만 한 문단으로 전달해 적절한 작업 방안을 검토하도록 요청합니다. 이어서 구현 영역(프론트엔드·백엔드·공동·개발 불필요·미확인)과 근거를 정리합니다. 코드 판단 전 원격 기본 브랜치를 최신화하며, 공수와 일정은 산정하지 않고 `$dev-plan`으로 연결합니다. `1`은 재발 방지 관점과 현재 요청 관점을 함께 제시하고 각 방안의 구현 영역을 따로 판정하며, `2`는 고객사가 요청한 내용에 집중합니다.
 - `$work-prd <Slack 링크 | 프로젝트명 + 범위 | 문서>`: 관련 이력과 최신 원본을 대조하여 LUKUKU 표준 8개 섹션의 PRD를 작성합니다. 확정·확인 필요·보류를 구분하고 편집 가능한 HTML과 공유용 PDF를 생성해 버전과 근거를 DB에 연결합니다. 공수와 개발 TODO는 만들지 않으며 검토된 PRD를 `$dev-plan`으로 넘깁니다.
 - `$work-wbs <PRD·Slack 링크·프로젝트·작업 ID·기존 WBS>`: 검수된 개발 계획과 최신 진행 근거를 LUKUKU WBS v1.1 구조로 정리해 편집용 XLSX와 공유용 PDF를 생성합니다. 기준·현재 예상·실제 일정과 미입력·0 공수를 분리하고 버전별 일정 스냅샷을 DB에 보존합니다.
+- `$work-policy <프로젝트·Slack 링크·정책 영역·기존 policy.md>`: 고객사와 명시적으로 합의된 현재 정책만 LUKUKU 표준 Markdown으로 작성합니다. 정책별 근거와 문서 버전을 DB에 보존하며 구현·공수·TODO는 포함하지 않습니다.
 - `$work-status <프로젝트>`: 저장된 이력과 마지막 근거 이후의 Slack·Git 상태를 확인해 완료·진행 중·차단·미확인 현황을 보고합니다.
 - `$work-act <작업 내용 또는 리서치 결과>`: 실행 가능성과 현재 상태를 재검증한 뒤 Playwright로 앱 설정·세그먼트 생성 등의 작업을 수행하고 결과와 테스트 증거를 보여줍니다. 라이브 반영이나 운영에 영향을 주는 동작은 바로 직전에 최종 확인을 받습니다.
 - `$dev-plan <PRD·WBS·Slack 링크·문서>`: PM에게 전달할 답변을 먼저 작성하고 요구사항, 현재 코드, 과거 결정을 교차 검수합니다. 문서와 표 구조를 보존해 원문과 대조하고, 간단한 검토는 세션에 답변하며, 구조화가 필요한 검토만 근거 중심 HTML 보고서로 만듭니다. 개발 가능성, 공수 범위, 의존성, 완료 조건과 작업 목록도 DB에 기록합니다.
 - `$dev-implement <작업 ID·Slack 링크>`: 원문과 승인된 계획을 다시 대조한 뒤 정확히 하나의 작업만 `$b-start`로 개발합니다. 결과는 기본적으로 간결하게 보고하고, 복잡한 흐름·매핑·검수 근거에만 HTML을 사용합니다. `$b-end`와 `$b-deploy`는 실행하지 않습니다.
 - `$dev-context <프로젝트>`: 모든 저장소와 PR, 코드 흐름, AWS·Shopify 구조, 개발 진행현황과 다음 착수 가능 작업을 근거와 Mermaid로 정리합니다.
 - `$dev-pr [작업 ID·Slack 링크]`: 인자를 생략하면 현재 저장소와 최근 구현 이력에서 방금 작업한 항목을 찾고, 검증된 대상 브랜치로 push와 PR 생성만 수행합니다.
-- 로컬 SQLite + FTS5 MCP: 프로젝트, 작업 근거, 문서 버전, 개발 작업과 상태 이력, 공수, 완료 조건, 아키텍처 스냅샷, 저장소와 커밋을 검색 가능한 형태로 보관합니다.
+- 로컬 SQLite + FTS5 MCP: 프로젝트, 작업 근거, 문서 버전, 합의 정책 스냅샷, 개발 작업과 상태 이력, 공수, 완료 조건, 아키텍처 스냅샷, 저장소와 커밋을 검색 가능한 형태로 보관합니다.
 - Codex의 기존 Slack, GitHub, Shopify, Playwright 도구를 사용하므로 조사와 답변 생성도 현재 Codex 세션에서 수행됩니다.
 
 SQLite는 검색 인덱스이자 근거 기록입니다. 변경 가능성이 있는 사실은 답변 전에 원본 Slack 쓰레드, 최신 Git SHA, Shopify Admin 또는 브라우저에서 재검증합니다.
@@ -38,6 +39,7 @@ $work-research 2 https://your-workspace.slack.com/archives/C01234567/p1234567890
 $work-research https://your-workspace.slack.com/archives/C01234567/p1234567890  # 2와 동일
 $work-prd https://your-workspace.slack.com/archives/C01234567/p1234567890
 $work-wbs <PRD·Slack 링크·프로젝트·작업 ID·기존 WBS>
+$work-policy <프로젝트·Slack 링크·정책 영역·기존 policy.md>
 $dev-plan <PRD 또는 WBS>
 $dev-context <프로젝트>
 $dev-implement <작업 ID 또는 Slack 링크>
@@ -66,6 +68,7 @@ Claude Code에서는 다음처럼 실행합니다.
 /work-research-agent:work-research <Slack 링크>
 /work-research-agent:work-prd <Slack 링크 또는 프로젝트명 + 범위>
 /work-research-agent:work-wbs <PRD·Slack 링크·프로젝트·작업 ID·기존 WBS>
+/work-research-agent:work-policy <프로젝트·Slack 링크·정책 영역·기존 policy.md>
 /work-research-agent:dev-plan <PRD 또는 WBS>
 /work-research-agent:dev-context <프로젝트>
 /work-research-agent:dev-implement <작업 ID 또는 Slack 링크>

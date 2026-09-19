@@ -29,6 +29,7 @@ Claude Code 플러그인 스킬은 플러그인 이름이 붙습니다.
 /work-research-agent:work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 /work-research-agent:work-prd <Slack 링크 또는 프로젝트명 + 범위>
 /work-research-agent:work-wbs <PRD·Slack 링크·프로젝트·작업 ID·기존 WBS>
+/work-research-agent:work-policy <프로젝트·Slack 링크·정책 영역·기존 policy.md>
 /work-research-agent:work-act <작업 내용 또는 리서치 결과>
 /work-research-agent:dev-plan <PRD·WBS·Slack 링크·문서>
 /work-research-agent:dev-context <프로젝트>
@@ -49,6 +50,8 @@ Claude Code 플러그인 스킬은 플러그인 이름이 붙습니다.
 `work-prd`는 관련 이력과 최신 Slack·문서·현재 동작을 대조해 LUKUKU 표준 PRD를 HTML과 PDF로 생성합니다. 프로젝트명만으로 범위가 하나로 정해지지 않으면 작성 대상을 먼저 확인하며, 확정되지 않은 내용은 `확인 필요`로 남깁니다. PRD 초안은 개발 TODO나 승인으로 취급하지 않고 검토 후 `dev-plan`으로 연결합니다.
 
 `work-wbs`는 검수된 개발 계획을 LUKUKU WBS v1.1 일정으로 구성해 XLSX와 PDF를 생성합니다. 기준·현재 예상·실제 일정과 미입력·0 공수를 분리하고 WBS 버전별 일정 스냅샷을 로컬 DB에 보존합니다. 생성된 WBS는 개발 착수 승인이 아닙니다.
+
+`work-policy`는 고객사와 명시적으로 합의된 현재 정책만 내장된 LUKUKU Markdown 표준으로 작성하고 버전별 정책 스냅샷을 로컬 DB에 보존합니다. 코드 동작·내부 제안·고객의 무응답은 정책 근거로 사용하지 않으며 자동 커밋이나 push는 하지 않습니다.
 
 `dev-plan`은 PM에게 전달할 답변을 먼저 작성합니다. 간단한 검토는 세션에 답변하고, 비교표·다이어그램·복수 대안이나 긴 근거가 필요한 검토는 `~/.local/share/work-research-agent/reports/`에 상세 HTML 보고서를 생성합니다. 답변을 Slack에 자동 게시하지는 않습니다.
 

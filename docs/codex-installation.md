@@ -64,6 +64,7 @@ $work-research 2 https://your-workspace.slack.com/archives/C01234567/p1234567890
 $work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 $work-prd https://your-workspace.slack.com/archives/C01234567/p1234567890
 $work-wbs <PRD·Slack 링크·프로젝트·작업 ID·기존 WBS>
+$work-policy <프로젝트·Slack 링크·정책 영역·기존 policy.md>
 ```
 
 `1`은 재발 방지 관점과 현재 요청 관점의 답변을 함께 만듭니다. 근본 원인은 현재 문의에서 직접 재현하거나 코드 흐름을 끝까지 추적한 경우에만 확정합니다. `2`는 고객사가 요청한 내용에 집중하며, 번호를 생략해도 `2`로 동작합니다.
@@ -81,6 +82,8 @@ $work-wbs <PRD·Slack 링크·프로젝트·작업 ID·기존 WBS>
 `$work-prd`는 Slack 링크, 프로젝트명과 범위, 또는 문서를 입력받아 관련 이력과 최신 원본을 대조한 뒤 LUKUKU 표준 PRD의 8개 섹션을 작성합니다. 프로젝트 이력에 서로 다른 요청이 섞여 있으면 작성 범위를 먼저 확인합니다. 결과는 `~/.local/share/work-research-agent/prd/<project>/` 아래 HTML과 PDF로 생성하고 문서 버전과 근거를 DB에 연결합니다. 초안은 개발 TODO나 승인으로 전환하지 않으며 검토 후 `$dev-plan <PRD 경로>`로 넘깁니다.
 
 `$work-wbs`는 `$dev-plan`에서 검수된 작업·의존성·공수·완료 기준을 일정으로 구성해 `~/.local/share/work-research-agent/wbs/` 아래 XLSX와 PDF를 생성합니다. 기준 일정, 현재 예상, 실제 수행을 분리하고 알 수 없는 날짜·담당자·공수는 추측하지 않습니다. WBS 파일과 일정은 개발 착수 승인이 아닙니다.
+
+`$work-policy`는 고객사와 명시적으로 합의된 현재 정책만 내장된 LUKUKU Markdown 표준으로 작성합니다. 버전별 파일은 `~/.local/share/work-research-agent/policy/`에 보존하고, 대상 저장소가 명확하면 `docs/policy.md`도 갱신합니다. 코드 동작·제안·고객의 무응답을 정책으로 추정하지 않으며 자동 커밋이나 push는 하지 않습니다.
 
 ## 조사 결과 실행
 

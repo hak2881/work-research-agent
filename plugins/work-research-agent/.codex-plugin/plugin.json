@@ -1,7 +1,7 @@
 {
   "name": "work-research-agent",
-  "version": "0.9.0",
-  "description": "Evidence-backed PM research, LUKUKU-standard PRDs and WBS artifacts, and developer workflows inside Codex.",
+  "version": "0.10.0",
+  "description": "Evidence-backed PM research, LUKUKU-standard PRDs, WBS artifacts, policy documents, and developer workflows inside Codex.",
   "author": {
     "name": "hak2881",
     "url": "https://github.com/hak2881"
@@ -15,7 +15,7 @@
   "interface": {
     "displayName": "Work Research Agent",
     "shortDescription": "Verify requests and run sourced developer workflows.",
-    "longDescription": "Build project history, verify customer requests, author LUKUKU-standard PRDs and WBS schedules, and run developer workflows against current Slack, Git, code, AWS, Shopify, and browser evidence.",
+    "longDescription": "Build project history, verify customer requests, author LUKUKU-standard PRDs, WBS schedules, and policy documents, and run developer workflows against current Slack, Git, code, AWS, Shopify, and browser evidence.",
     "developerName": "hak2881",
     "category": "Productivity",
     "capabilities": ["Interactive", "Write"],
@@ -25,7 +25,8 @@
       "$work-status <프로젝트>",
       "$work-research <Slack 링크>",
       "$work-prd <Slack 링크>",
-      "$work-wbs <프로젝트 또는 PRD>"
+      "$work-wbs <프로젝트 또는 PRD>",
+      "$work-policy <프로젝트 또는 Slack 링크>"
     ]
   }
 }

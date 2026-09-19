@@ -370,6 +370,132 @@ def test_wbs_schedule_snapshot_is_atomic_and_immutable(tmp_path: Path) -> None:
         )
 
 
+def test_policy_snapshots_preserve_versions_and_authority(tmp_path: Path) -> None:
+    store = make_store(tmp_path)
+    store.upsert_project("verish", "Verish")
+    evidence = store.record_evidence(
+        project_slug="verish",
+        source_type="slack",
+        source_uri="slack://C1/123.456",
+        title="B2B approval policy",
+        claim="승인된 회사 계정만 도매가를 조회합니다.",
+        verification_level="slack",
+        confidence="explicit",
+    )
+    for version in ("v0.1", "v0.2"):
+        store.record_document(
+            "verish",
+            f"policy:store:{version}",
+            f"file:///tmp/policy-{version}.md",
+            "policy",
+            "Verish 정책 문서",
+            version=version,
+            content_hash=f"sha256:{version}",
+            captured_at=f"2026-09-{20 if version == 'v0.1' else 21}T00:00:00Z",
+        )
+
+    first = store.record_policy_snapshot(
+        "verish",
+        "policy:store:v0.1",
+        [
+            {
+                "policy_key": "POL-MEMBER-001",
+                "area": "회원",
+                "title": "B2B 회원 승인",
+                "body_markdown": "승인된 회사 계정만 도매가를 조회합니다.",
+                "policy_state": "agreed",
+                "reviewed_at": "2026-09-20",
+                "authority_evidence_id": evidence["id"],
+            }
+        ],
+    )
+    second = store.record_policy_snapshot(
+        "verish",
+        "policy:store:v0.2",
+        [
+            {
+                "policy_key": "POL-MEMBER-001",
+                "area": "회원",
+                "title": "B2B 회원 승인",
+                "body_markdown": "승인된 회사 계정만 도매가를 조회하며 승인 전에는 일반 판매가를 표시합니다.",
+                "policy_state": "agreed",
+                "effective_from": "2026-09-21",
+                "reviewed_at": "2026-09-21",
+                "authority_evidence_id": evidence["id"],
+            }
+        ],
+    )
+
+    context = store.project_context("verish")
+    assert [row["policy_document_key"] for row in context["policy_snapshots"]] == [
+        "policy:store:v0.2",
+        "policy:store:v0.1",
+    ]
+    assert first[0]["body_markdown"].endswith("조회합니다.")
+    assert second[0]["effective_from"] == "2026-09-21"
+
+
+def test_policy_snapshot_is_atomic_and_immutable(tmp_path: Path) -> None:
+    store = make_store(tmp_path)
+    store.upsert_project("verish", "Verish")
+    store.record_document(
+        "verish",
+        "policy:store:v0.1",
+        "file:///tmp/policy.md",
+        "policy",
+        "Verish 정책 문서",
+        version="v0.1",
+        content_hash="sha256:policy",
+    )
+
+    with pytest.raises(ValueError, match="authoritative evidence"):
+        store.record_policy_snapshot(
+            "verish",
+            "policy:store:v0.1",
+            [
+                {
+                    "policy_key": "POL-ORDER-001",
+                    "area": "주문",
+                    "title": "재고 예약",
+                    "body_markdown": "결제 시작 시 재고를 예약합니다.",
+                    "policy_state": "agreed",
+                    "reviewed_at": "2026-09-20",
+                }
+            ],
+        )
+    assert store.project_context("verish")["policy_snapshots"] == []
+
+    store.record_policy_snapshot(
+        "verish",
+        "policy:store:v0.1",
+        [
+            {
+                "policy_key": "AREA-PRODUCT",
+                "area": "상품",
+                "title": "",
+                "body_markdown": "현재 확정된 정책 없음",
+                "policy_state": "no_confirmed_policy",
+                "reviewed_at": "2026-09-20",
+            }
+        ],
+    )
+    with pytest.raises(ValueError, match="already has policy rows"):
+        store.record_policy_snapshot(
+            "verish",
+            "policy:store:v0.1",
+            [
+                {
+                    "policy_key": "AREA-PRODUCT",
+                    "area": "상품",
+                    "title": "",
+                    "body_markdown": "현재 확정된 정책 없음",
+                    "policy_state": "no_confirmed_policy",
+                    "reviewed_at": "2026-09-21",
+                }
+            ],
+        )
+
+
 def test_architecture_snapshots_are_versioned_in_project_context(tmp_path: Path) -> None:
     store = make_store(tmp_path)
     store.upsert_project("verish", "Verish")

@@ -73,6 +73,48 @@ async def test_mcp_lists_and_calls_history_tools(tmp_path: Path) -> None:
                 ],
             },
         )
+        policy_evidence = await client.call_tool(
+            "history_record_evidence",
+            {
+                "project_slug": "verish",
+                "source_type": "slack",
+                "source_uri": "slack://C1/policy",
+                "title": "Policy approval",
+                "claim": "승인된 회원만 도매가를 조회합니다.",
+                "verification_level": "slack",
+                "confidence": "explicit",
+            },
+        )
+        await client.call_tool(
+            "history_record_document",
+            {
+                "project_slug": "verish",
+                "external_key": "policy:store:v0.1",
+                "source_uri": "file:///tmp/policy.md",
+                "document_type": "policy",
+                "title": "Store policy",
+                "version": "v0.1",
+                "content_hash": "sha256:policy",
+            },
+        )
+        policy = await client.call_tool(
+            "history_record_policy_snapshot",
+            {
+                "project_slug": "verish",
+                "policy_document_key": "policy:store:v0.1",
+                "rows": [
+                    {
+                        "policy_key": "POL-MEMBER-001",
+                        "area": "회원",
+                        "title": "B2B 회원 승인",
+                        "body_markdown": "승인된 회원만 도매가를 조회합니다.",
+                        "policy_state": "agreed",
+                        "reviewed_at": "2026-09-20",
+                        "authority_evidence_id": policy_evidence.structured_content["id"],
+                    }
+                ],
+            },
+        )
         updated_context = await client.call_tool(
             "history_project_context", {"project_slug": "verish"}
         )
@@ -94,6 +136,7 @@ async def test_mcp_lists_and_calls_history_tools(tmp_path: Path) -> None:
         "history_link_work_item_dependency",
         "history_record_architecture_snapshot",
         "history_record_wbs_schedule_snapshot",
+        "history_record_policy_snapshot",
         "history_project_context",
     }.issubset(names)
     assert created.structured_content["slug"] == "verish"
@@ -105,3 +148,7 @@ async def test_mcp_lists_and_calls_history_tools(tmp_path: Path) -> None:
     assert updated_context.structured_content["wbs_schedule_snapshots"][0][
         "wbs_document_key"
     ] == "wbs:checkout:v0.1"
+    assert policy.structured_content["result"][0]["policy_key"] == "POL-MEMBER-001"
+    assert updated_context.structured_content["policy_snapshots"][0][
+        "policy_document_key"
+    ] == "policy:store:v0.1"
