@@ -127,6 +127,10 @@ def test_renderer_creates_safe_standard_html(tmp_path: Path) -> None:
     assert "{{" not in text
     assert "<script" not in text.lower()
     assert "https://" not in text
+    assert 'data-wbs-section="contents"' in text
+    assert "목차" in text
+    for title in ("전체 일정", "월간 일정표", "주간 일정표", "주요 마일스톤", "작업별 일정·공수", "착수 조건·완료 기준"):
+        assert title in text
     positions = [
         text.index(f'data-wbs-section="{name}"')
         for name in (
@@ -142,6 +146,18 @@ def test_renderer_creates_safe_standard_html(tmp_path: Path) -> None:
     assert positions == sorted(positions)
     for display_id in ("TASK-001", "TASK-002", "TASK-003", "MS-001"):
         assert text.count(f'data-item-id="{display_id}"') >= 1
+
+
+def test_gantt_uses_phase_date_ranges_instead_of_filling_every_week() -> None:
+    renderer = load_renderer()
+    text = "".join(body for _, body, _ in renderer.build_html_content(manifest()))
+
+    assert 'data-gantt-phase="개발"' in text
+    assert 'data-gantt-start="2026-09-21"' in text
+    assert 'data-gantt-end="2026-09-28"' in text
+    assert 'data-gantt-phase="변경 관리"' in text
+    assert 'data-gantt-start=""' in text
+    assert text.count('class="gantt-bar"') < 16 * 3
 
 
 def test_renderer_cli_creates_all_artifacts(tmp_path: Path) -> None:
