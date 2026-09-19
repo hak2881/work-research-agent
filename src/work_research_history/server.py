@@ -223,6 +223,23 @@ def create_server(database_path: str | Path | None = None) -> MCPServer:
             project_slug, work_item_key, dependency_key
         )
 
+    @server.tool(name="history_record_wbs_schedule_snapshot")
+    async def record_wbs_schedule_snapshot(
+        project_slug: str,
+        wbs_document_key: str,
+        rows: list[dict[str, Any]],
+        captured_at: str | None = None,
+    ) -> dict[str, Any]:
+        """Store one immutable set of WBS schedule rows for a document version."""
+        return {
+            "result": store.record_wbs_schedule_snapshot(
+                project_slug,
+                wbs_document_key,
+                rows,
+                captured_at=captured_at,
+            )
+        }
+
     @server.tool(name="history_record_architecture_snapshot")
     async def record_architecture_snapshot(
         project_slug: str,

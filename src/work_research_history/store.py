@@ -30,6 +30,9 @@ WORK_ITEM_STATES = {
 WORK_ITEM_ORIGINS = {"explicit", "proposed"}
 ESTIMATE_BASES = {"source", "engineering"}
 ACCEPTANCE_STATUSES = {"proposed", "accepted", "rejected", "verified"}
+WBS_ITEM_TYPES = {"task", "milestone"}
+WBS_STATUSES = {"예정", "진행 중", "확인 대기", "완료", "보류"}
+SCHEDULE_BASES = {"confirmed", "planned", "proposed", "unknown"}
 
 
 def _now() -> str:
@@ -240,6 +243,33 @@ class HistoryStore:
                 source_evidence_id INTEGER REFERENCES evidence(id) ON DELETE SET NULL,
                 updated_at TEXT NOT NULL,
                 UNIQUE(work_item_id, criterion_key)
+            );
+
+            CREATE TABLE IF NOT EXISTS work_item_schedule_snapshots (
+                id INTEGER PRIMARY KEY,
+                project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+                wbs_document_key TEXT NOT NULL,
+                work_item_key TEXT NOT NULL,
+                display_id TEXT NOT NULL,
+                item_type TEXT NOT NULL,
+                owner TEXT,
+                collaborators_json TEXT NOT NULL DEFAULT '[]',
+                wbs_status TEXT NOT NULL,
+                schedule_basis TEXT NOT NULL,
+                baseline_start TEXT,
+                baseline_end TEXT,
+                forecast_start TEXT,
+                forecast_end TEXT,
+                actual_start TEXT,
+                actual_end TEXT,
+                selected_estimate_key TEXT,
+                actual_effort REAL,
+                actual_effort_unit TEXT,
+                change_note TEXT,
+                source_evidence_id INTEGER REFERENCES evidence(id) ON DELETE SET NULL,
+                captured_at TEXT NOT NULL,
+                UNIQUE(project_id, wbs_document_key, work_item_key),
+                UNIQUE(project_id, wbs_document_key, display_id)
             );
 
             CREATE TABLE IF NOT EXISTS architecture_snapshots (
@@ -759,6 +789,142 @@ class HistoryStore:
         self.connection.commit()
         return {"work_item_key": work_item_key, "dependency_key": dependency_key}
 
+    def record_wbs_schedule_snapshot(
+        self,
+        project_slug: str,
+        wbs_document_key: str,
+        rows: list[dict[str, Any]],
+        *,
+        captured_at: str | None = None,
+    ) -> list[dict[str, Any]]:
+        if not rows:
+            raise ValueError("WBS schedule snapshot requires at least one row")
+        project = self._project(project_slug)
+        document = self.connection.execute(
+            """
+            SELECT id, document_type FROM project_documents
+            WHERE project_id = ? AND external_key = ?
+            """,
+            (project["id"], wbs_document_key),
+        ).fetchone()
+        if document is None:
+            raise ValueError(f"unknown WBS document: {wbs_document_key}")
+        if document["document_type"] != "wbs":
+            raise ValueError(f"document is not a WBS: {wbs_document_key}")
+        existing = self.connection.execute(
+            """
+            SELECT 1 FROM work_item_schedule_snapshots
+            WHERE project_id = ? AND wbs_document_key = ? LIMIT 1
+            """,
+            (project["id"], wbs_document_key),
+        ).fetchone()
+        if existing is not None:
+            raise ValueError(f"WBS document already has schedule rows: {wbs_document_key}")
+
+        work_item_keys = [str(row.get("work_item_key", "")) for row in rows]
+        display_ids = [str(row.get("display_id", "")) for row in rows]
+        if len(set(work_item_keys)) != len(work_item_keys):
+            raise ValueError("duplicate work item key in WBS schedule snapshot")
+        if len(set(display_ids)) != len(display_ids):
+            raise ValueError("duplicate display ID in WBS schedule snapshot")
+
+        validated: list[dict[str, Any]] = []
+        for row in rows:
+            work_item_key = str(row.get("work_item_key", "")).strip()
+            display_id = str(row.get("display_id", "")).strip()
+            item_type = str(row.get("item_type", ""))
+            wbs_status = str(row.get("wbs_status", ""))
+            schedule_basis = str(row.get("schedule_basis", ""))
+            if not work_item_key or not display_id:
+                raise ValueError("work item key and display ID are required")
+            if item_type not in WBS_ITEM_TYPES:
+                raise ValueError(f"invalid WBS item type: {item_type}")
+            if wbs_status not in WBS_STATUSES:
+                raise ValueError(f"invalid WBS status: {wbs_status}")
+            if schedule_basis not in SCHEDULE_BASES:
+                raise ValueError(f"invalid schedule basis: {schedule_basis}")
+            item = self.connection.execute(
+                "SELECT id FROM work_items WHERE project_id = ? AND external_key = ?",
+                (project["id"], work_item_key),
+            ).fetchone()
+            if item is None:
+                raise ValueError(f"unknown work item: {work_item_key}")
+            selected_estimate_key = row.get("selected_estimate_key")
+            if selected_estimate_key is not None:
+                estimate = self.connection.execute(
+                    """
+                    SELECT 1 FROM work_item_estimates
+                    WHERE work_item_id = ? AND estimate_key = ?
+                    """,
+                    (item["id"], selected_estimate_key),
+                ).fetchone()
+                if estimate is None:
+                    raise ValueError(
+                        f"unknown estimate for {work_item_key}: {selected_estimate_key}"
+                    )
+            actual_effort = row.get("actual_effort")
+            actual_effort_unit = row.get("actual_effort_unit")
+            if (actual_effort is None) != (actual_effort_unit is None):
+                raise ValueError("actual effort and unit must be supplied together")
+            validated.append(
+                {
+                    **row,
+                    "work_item_key": work_item_key,
+                    "display_id": display_id,
+                    "item_type": item_type,
+                    "wbs_status": wbs_status,
+                    "schedule_basis": schedule_basis,
+                    "collaborators": list(row.get("collaborators") or []),
+                }
+            )
+
+        timestamp = captured_at or _now()
+        with self.connection:
+            for row in validated:
+                self.connection.execute(
+                    """
+                    INSERT INTO work_item_schedule_snapshots(
+                        project_id, wbs_document_key, work_item_key, display_id,
+                        item_type, owner, collaborators_json, wbs_status,
+                        schedule_basis, baseline_start, baseline_end,
+                        forecast_start, forecast_end, actual_start, actual_end,
+                        selected_estimate_key, actual_effort, actual_effort_unit,
+                        change_note, source_evidence_id, captured_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        project["id"],
+                        wbs_document_key,
+                        row["work_item_key"],
+                        row["display_id"],
+                        row["item_type"],
+                        row.get("owner"),
+                        json.dumps(row["collaborators"], ensure_ascii=False),
+                        row["wbs_status"],
+                        row["schedule_basis"],
+                        row.get("baseline_start"),
+                        row.get("baseline_end"),
+                        row.get("forecast_start"),
+                        row.get("forecast_end"),
+                        row.get("actual_start"),
+                        row.get("actual_end"),
+                        row.get("selected_estimate_key"),
+                        row.get("actual_effort"),
+                        row.get("actual_effort_unit"),
+                        row.get("change_note"),
+                        row.get("source_evidence_id"),
+                        timestamp,
+                    ),
+                )
+        stored = self.connection.execute(
+            """
+            SELECT * FROM work_item_schedule_snapshots
+            WHERE project_id = ? AND wbs_document_key = ? ORDER BY display_id
+            """,
+            (project["id"], wbs_document_key),
+        ).fetchall()
+        return [self._wbs_schedule_dict(row) for row in stored]
+
     def record_architecture_snapshot(
         self,
         project_slug: str,
@@ -822,6 +988,12 @@ class HistoryStore:
         ).fetchone()
         if item is None:
             raise ValueError(f"unknown work item: {external_key}")
+        return item
+
+    @staticmethod
+    def _wbs_schedule_dict(row: sqlite3.Row) -> dict[str, Any]:
+        item = dict(row)
+        item["collaborators"] = json.loads(item.pop("collaborators_json"))
         return item
 
     def register_repository(
@@ -1100,6 +1272,21 @@ class HistoryStore:
             snapshot = dict(snapshot_row)
             snapshot["source_refs"] = json.loads(snapshot["source_refs"])
             architecture_snapshots.append(snapshot)
+        wbs_schedule_snapshots = [
+            self._wbs_schedule_dict(row)
+            for row in self.connection.execute(
+                """
+                SELECT schedule.*
+                FROM work_item_schedule_snapshots schedule
+                JOIN project_documents document
+                  ON document.project_id = schedule.project_id
+                 AND document.external_key = schedule.wbs_document_key
+                WHERE schedule.project_id = ?
+                ORDER BY document.captured_at DESC, schedule.display_id
+                """,
+                (project["id"],),
+            ).fetchall()
+        ]
         return {
             "project": dict(project),
             "evidence": evidence,
@@ -1109,4 +1296,5 @@ class HistoryStore:
             "documents": documents,
             "work_items": work_items,
             "architecture_snapshots": architecture_snapshots,
+            "wbs_schedule_snapshots": wbs_schedule_snapshots,
         }

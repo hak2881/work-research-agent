@@ -43,6 +43,39 @@ async def test_mcp_lists_and_calls_history_tools(tmp_path: Path) -> None:
                 "acceptance_criteria": ["Retries are bounded"],
             },
         )
+        await client.call_tool(
+            "history_record_document",
+            {
+                "project_slug": "verish",
+                "external_key": "wbs:checkout:v0.1",
+                "source_uri": "file:///tmp/wbs.pdf",
+                "document_type": "wbs",
+                "title": "Checkout WBS",
+                "version": "v0.1",
+                "content_hash": "sha256:wbs",
+            },
+        )
+        snapshot = await client.call_tool(
+            "history_record_wbs_schedule_snapshot",
+            {
+                "project_slug": "verish",
+                "wbs_document_key": "wbs:checkout:v0.1",
+                "rows": [
+                    {
+                        "work_item_key": "DEV-1",
+                        "display_id": "TASK-001",
+                        "item_type": "task",
+                        "owner": "BE",
+                        "collaborators": ["PM"],
+                        "wbs_status": "예정",
+                        "schedule_basis": "unknown",
+                    }
+                ],
+            },
+        )
+        updated_context = await client.call_tool(
+            "history_project_context", {"project_slug": "verish"}
+        )
 
     assert {
         "history_upsert_project",
@@ -60,6 +93,7 @@ async def test_mcp_lists_and_calls_history_tools(tmp_path: Path) -> None:
         "history_upsert_acceptance_criterion",
         "history_link_work_item_dependency",
         "history_record_architecture_snapshot",
+        "history_record_wbs_schedule_snapshot",
         "history_project_context",
     }.issubset(names)
     assert created.structured_content["slug"] == "verish"
@@ -67,3 +101,7 @@ async def test_mcp_lists_and_calls_history_tools(tmp_path: Path) -> None:
     assert projects.structured_content["result"][0]["slug"] == "verish"
     assert document.structured_content["external_key"] == "prd:v1"
     assert item.structured_content["state"] == "ready"
+    assert snapshot.structured_content["result"][0]["display_id"] == "TASK-001"
+    assert updated_context.structured_content["wbs_schedule_snapshots"][0][
+        "wbs_document_key"
+    ] == "wbs:checkout:v0.1"

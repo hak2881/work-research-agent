@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from work_research_history.store import HistoryStore
 
 
@@ -231,6 +233,141 @@ def test_work_item_keeps_multiple_estimates_and_sourced_acceptance_criteria(
         "proposed",
     ]
     assert item["acceptance_criteria_records"][1]["status"] == "proposed"
+
+
+def test_wbs_schedule_snapshots_preserve_versions_and_zero_effort(tmp_path: Path) -> None:
+    store = make_store(tmp_path)
+    store.upsert_project("verish", "Verish")
+    store.upsert_work_item("verish", "DEV-1", "Checkout", state="planned")
+    for version in ("v0.1", "v0.2"):
+        store.record_document(
+            "verish",
+            f"wbs:checkout:{version}",
+            f"file:///tmp/{version}.pdf",
+            "wbs",
+            "Checkout WBS",
+            version=version,
+            content_hash=f"sha256:{version}",
+            captured_at=f"2026-09-{20 if version == 'v0.1' else 21}T00:00:00Z",
+        )
+
+    first = store.record_wbs_schedule_snapshot(
+        "verish",
+        "wbs:checkout:v0.1",
+        [
+            {
+                "work_item_key": "DEV-1",
+                "display_id": "TASK-001",
+                "item_type": "task",
+                "owner": "FE",
+                "collaborators": ["PM"],
+                "wbs_status": "예정",
+                "schedule_basis": "planned",
+                "baseline_start": "2026-09-21",
+                "baseline_end": "2026-09-22",
+                "actual_effort": None,
+                "actual_effort_unit": None,
+            }
+        ],
+    )
+    second = store.record_wbs_schedule_snapshot(
+        "verish",
+        "wbs:checkout:v0.2",
+        [
+            {
+                "work_item_key": "DEV-1",
+                "display_id": "TASK-001",
+                "item_type": "task",
+                "owner": "FE",
+                "collaborators": ["PM"],
+                "wbs_status": "진행 중",
+                "schedule_basis": "confirmed",
+                "baseline_start": "2026-09-21",
+                "baseline_end": "2026-09-22",
+                "forecast_start": "2026-09-21",
+                "forecast_end": "2026-09-24",
+                "actual_effort": 0,
+                "actual_effort_unit": "MH",
+            }
+        ],
+    )
+
+    context = store.project_context("verish")
+
+    assert [row["wbs_document_key"] for row in context["wbs_schedule_snapshots"]] == [
+        "wbs:checkout:v0.2",
+        "wbs:checkout:v0.1",
+    ]
+    assert first[0]["actual_effort"] is None
+    assert second[0]["actual_effort"] == 0
+    assert second[0]["collaborators"] == ["PM"]
+
+
+def test_wbs_schedule_snapshot_is_atomic_and_immutable(tmp_path: Path) -> None:
+    store = make_store(tmp_path)
+    store.upsert_project("verish", "Verish")
+    store.upsert_work_item("verish", "DEV-1", "Checkout", state="planned")
+    store.record_document(
+        "verish",
+        "wbs:checkout:v0.1",
+        "file:///tmp/wbs.pdf",
+        "wbs",
+        "Checkout WBS",
+        version="v0.1",
+        content_hash="sha256:wbs",
+    )
+
+    with pytest.raises(ValueError, match="unknown work item"):
+        store.record_wbs_schedule_snapshot(
+            "verish",
+            "wbs:checkout:v0.1",
+            [
+                {
+                    "work_item_key": "DEV-1",
+                    "display_id": "TASK-001",
+                    "item_type": "task",
+                    "wbs_status": "예정",
+                    "schedule_basis": "unknown",
+                },
+                {
+                    "work_item_key": "DEV-404",
+                    "display_id": "TASK-404",
+                    "item_type": "task",
+                    "wbs_status": "예정",
+                    "schedule_basis": "unknown",
+                },
+            ],
+        )
+
+    assert store.project_context("verish")["wbs_schedule_snapshots"] == []
+
+    store.record_wbs_schedule_snapshot(
+        "verish",
+        "wbs:checkout:v0.1",
+        [
+            {
+                "work_item_key": "DEV-1",
+                "display_id": "TASK-001",
+                "item_type": "task",
+                "wbs_status": "예정",
+                "schedule_basis": "unknown",
+            }
+        ],
+    )
+    with pytest.raises(ValueError, match="already has schedule rows"):
+        store.record_wbs_schedule_snapshot(
+            "verish",
+            "wbs:checkout:v0.1",
+            [
+                {
+                    "work_item_key": "DEV-1",
+                    "display_id": "TASK-001",
+                    "item_type": "task",
+                    "wbs_status": "진행 중",
+                    "schedule_basis": "confirmed",
+                }
+            ],
+        )
 
 
 def test_architecture_snapshots_are_versioned_in_project_context(tmp_path: Path) -> None:
