@@ -27,6 +27,7 @@ Claude Code 플러그인 스킬은 플러그인 이름이 붙습니다.
 /work-research-agent:work-research 1 https://your-workspace.slack.com/archives/C01234567/p1234567890
 /work-research-agent:work-research 2 https://your-workspace.slack.com/archives/C01234567/p1234567890
 /work-research-agent:work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
+/work-research-agent:work-prd <Slack 링크 또는 프로젝트명 + 범위>
 /work-research-agent:work-act <작업 내용 또는 리서치 결과>
 /work-research-agent:dev-plan <PRD·WBS·Slack 링크·문서>
 /work-research-agent:dev-context <프로젝트>
@@ -43,6 +44,8 @@ Claude Code 플러그인 스킬은 플러그인 이름이 붙습니다.
 조사 결과는 고객사 답변을 먼저 표시하고, 답을 바꾸는 핵심 판단과 개발자 검수 요청만 이어서 보여줍니다. 고객사 답변은 구현 방식을 확정하지 않으며, 개발자 전달문은 상세 설계 없이 요청과 핵심 확인 사항을 한 문단으로 전달해 적절한 작업 방안을 검토하도록 요청합니다. 정상적인 Git·도구·이력 저장 로그는 결과에서 생략합니다.
 
 `work-research`에서 코드 검수가 필요하면 원격 기본 브랜치를 먼저 `fetch`합니다. 깨끗한 기본 브랜치는 fast-forward 방식으로 최신화하고, 다른 브랜치나 로컬 변경이 있으면 최신 원격 SHA를 임시 worktree에서 검수하여 기존 작업을 보존합니다.
+
+`work-prd`는 관련 이력과 최신 Slack·문서·현재 동작을 대조해 LUKUKU 표준 PRD를 HTML과 PDF로 생성합니다. 프로젝트명만으로 범위가 하나로 정해지지 않으면 작성 대상을 먼저 확인하며, 확정되지 않은 내용은 `확인 필요`로 남깁니다. PRD 초안은 개발 TODO나 승인으로 취급하지 않고 검토 후 `dev-plan`으로 연결합니다.
 
 `dev-plan`은 PM에게 전달할 답변을 먼저 작성합니다. 간단한 검토는 세션에 답변하고, 비교표·다이어그램·복수 대안이나 긴 근거가 필요한 검토는 `~/.local/share/work-research-agent/reports/`에 상세 HTML 보고서를 생성합니다. 답변을 Slack에 자동 게시하지는 않습니다.
 

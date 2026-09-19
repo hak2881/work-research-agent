@@ -1,6 +1,9 @@
 import json
+import re
 import runpy
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -31,6 +34,7 @@ def test_codex_plugin_exposes_skills_and_history_mcp() -> None:
     } == {
         "work-history",
         "work-research",
+        "work-prd",
         "work-status",
         "work-act",
         "dev-plan",
@@ -70,6 +74,181 @@ def test_work_history_prioritizes_completed_work_over_todos() -> None:
     assert "Do not infer a TODO" in skill
     assert "one-time bootstrap" in skill
     assert "Do not filter repositories by the person's ownership" in skill
+
+
+def test_work_prd_uses_bounded_history_without_inventing_requirements() -> None:
+    skill_root = ROOT / "skills" / "work-prd"
+    skill = (skill_root / "SKILL.md").read_text()
+    history_rules = (skill_root / "references" / "history-resolution.md").read_text()
+    contract = (skill_root / "references" / "prd-contract.md").read_text()
+
+    assert "$work-prd <Slack permalink>" in skill
+    assert "$work-prd <project>" in skill
+    assert "$work-prd <project> <scope>" in skill
+    assert "history_project_context" in skill
+    assert "history_record_document" in skill
+    assert "Do not create work items" in skill
+    assert "load project history before asking the user to choose" in skill
+    assert "<document-external-key>#FR-NNN" in skill
+    assert "Escape source text as HTML" in skill
+    assert "every page passes" in skill
+    assert "superseded" in history_rules
+    assert "Current code proves current behavior" in history_rules
+    assert "proposed completion criterion" in contract
+    assert "[제안·확인 필요]" in contract
+    assert "explicit version lineage" in contract
+    assert "확정 | 확인 필요 | 보류" in contract
+    assert "$dev-plan" in contract
+
+
+def test_work_prd_ships_the_lukuku_standard_template_and_renderer(tmp_path: Path) -> None:
+    skill_root = ROOT / "skills" / "work-prd"
+    template = skill_root / "assets" / "lukuku-prd-template.html"
+    stylesheet = skill_root / "assets" / "lukuku-prd-template.css"
+    renderer = skill_root / "scripts" / "render_prd.py"
+
+    assert template.is_file()
+    assert stylesheet.is_file()
+    assert renderer.is_file()
+    html = template.read_text()
+    for section in (
+        "문서 정보",
+        "배경과 목표",
+        "포함·제외 범위",
+        "사용자와 주요 업무 흐름",
+        "기능 요구사항",
+        "품질·제약 조건",
+        "선행 조건·미확정 사항",
+        "전체 인수 기준·관련 문서",
+    ):
+        assert section in html
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(renderer),
+            "--allow-placeholders",
+            "--validate-only",
+            str(template),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "PRD HTML validation passed" in result.stdout
+
+    unresolved = subprocess.run(
+        [sys.executable, str(renderer), "--validate-only", str(template)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert unresolved.returncode == 1
+    assert "unresolved template placeholders" in unresolved.stderr
+
+    invalid_order = tmp_path / "invalid-order.html"
+    html = template.read_text()
+    html = html.replace('data-prd-section="1"', 'data-prd-section="swap"')
+    html = html.replace('data-prd-section="2"', 'data-prd-section="1"')
+    html = html.replace('data-prd-section="swap"', 'data-prd-section="2"')
+    invalid_order.write_text(html)
+    shutil.copy2(stylesheet, tmp_path / stylesheet.name)
+    wrong_order = subprocess.run(
+        [
+            sys.executable,
+            str(renderer),
+            "--allow-placeholders",
+            "--validate-only",
+            str(invalid_order),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert wrong_order.returncode == 1
+    assert "sections must appear in order" in wrong_order.stderr
+
+    blank_field = tmp_path / "blank-field.html"
+    blank_html = template.read_text().replace("{{PROJECT_NAME}}", "")
+    blank_html = re.sub(r"\{\{[^{}]+\}\}", "값", blank_html)
+    blank_field.write_text(blank_html)
+    blank_result = subprocess.run(
+        [sys.executable, str(renderer), "--validate-only", str(blank_field)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert blank_result.returncode == 1
+    assert "required PRD field is empty" in blank_result.stderr
+
+    materialized = template.read_text()
+    row_values = {
+        "GOAL_ROWS": "<tr><td>목표</td><td>결과</td><td>확인</td></tr>",
+        "IN_SCOPE_ROWS": "<tr><td>범위</td><td>내용</td></tr>",
+        "OUT_OF_SCOPE_ROWS": "<tr><td>제외</td><td>사유</td></tr>",
+        "ROLE_ROWS": "<tr><td>역할</td><td>목적</td><td>업무</td></tr>",
+        "FLOW_ROWS": "<tr><td>1</td><td>사용자</td><td>동작</td><td>결과</td></tr>",
+        "FUNCTIONAL_REQUIREMENT_ROWS": (
+            "<tr><td>FR-001</td><td>요구사항</td><td>필수</td>"
+            "<td>확정</td><td>완료 기준</td></tr>"
+        ),
+        "TECHNICAL_CONTEXT_ROWS": "<tr><td>대상</td><td>현황</td><td>근거</td></tr>",
+        "QUALITY_ROWS": "<tr><td>NFR-001</td><td>품질</td><td>기준</td><td>근거</td></tr>",
+        "CONSTRAINT_ROWS": "<tr><td>제약</td><td>영향</td><td>상태</td></tr>",
+        "PREREQUISITE_ROWS": "<tr><td>준비</td><td>담당</td><td>시점</td><td>영향</td></tr>",
+        "OPEN_QUESTION_ROWS": "<tr><td>질문</td><td>FR-001</td><td>담당</td><td>미정</td></tr>",
+        "ACCEPTANCE_ROWS": "<tr><td>대상</td><td>기준</td><td>근거</td></tr>",
+        "RELATED_DOCUMENT_ROWS": "<tr><td>문서</td><td>v1</td><td>위치</td><td>FR-001</td></tr>",
+    }
+    for placeholder, value in row_values.items():
+        materialized = materialized.replace(f"{{{{{placeholder}}}}}", value)
+    materialized = re.sub(r"\{\{[^{}]+\}\}", "값", materialized)
+
+    complete = tmp_path / "complete.html"
+    complete.write_text(materialized)
+    complete_result = subprocess.run(
+        [sys.executable, str(renderer), "--validate-only", str(complete)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert complete_result.returncode == 0, complete_result.stderr
+
+    missing_rows = tmp_path / "missing-rows.html"
+    missing_rows.write_text(
+        materialized.replace(row_values["FUNCTIONAL_REQUIREMENT_ROWS"], "")
+    )
+    missing_rows_result = subprocess.run(
+        [sys.executable, str(renderer), "--validate-only", str(missing_rows)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert missing_rows_result.returncode == 1
+    assert "functional-requirements requires at least one row" in missing_rows_result.stderr
+
+    incomplete_fr = tmp_path / "incomplete-fr.html"
+    incomplete_fr.write_text(materialized.replace("<td>요구사항</td>", "<td></td>"))
+    incomplete_result = subprocess.run(
+        [sys.executable, str(renderer), "--validate-only", str(incomplete_fr)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert incomplete_result.returncode == 1
+    assert "functional-requirements contains an incomplete row" in incomplete_result.stderr
+
+    unsafe_html = tmp_path / "unsafe.html"
+    unsafe_html.write_text(materialized.replace("<td>목표</td>", '<td><img src="https://example.com/a.png"></td>'))
+    unsafe_result = subprocess.run(
+        [sys.executable, str(renderer), "--validate-only", str(unsafe_html)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert unsafe_result.returncode == 1
+    assert "blocked remote media source" in unsafe_result.stderr
 
 
 def test_work_research_incrementally_persists_new_history() -> None:

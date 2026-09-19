@@ -52,6 +52,7 @@ def main() -> None:
     if {path.parent.name for path in skill_paths} != {
         "work-history",
         "work-research",
+        "work-prd",
         "work-status",
         "work-act",
         "dev-plan",
@@ -59,7 +60,7 @@ def main() -> None:
         "dev-context",
         "dev-pr",
     }:
-        raise ValueError("the four work skills and four dev skills are required")
+        raise ValueError("the five work skills and four dev skills are required")
     for path in skill_paths:
         metadata = load_skill(path)
         name = metadata.get("name")

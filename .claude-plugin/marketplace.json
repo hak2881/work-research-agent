@@ -9,8 +9,8 @@
     {
       "name": "work-research-agent",
       "source": "./plugins/work-research-agent",
-      "description": "Build work history, verify requests, and run evidence-backed developer workflows.",
-      "version": "0.7.4",
+      "description": "Build work history, verify requests, author LUKUKU-standard PRDs, and run evidence-backed developer workflows.",
+      "version": "0.8.0",
       "author": {
         "name": "hak2881"
       },

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LUKUKU PRD · {{PROJECT_NAME}}</title>
+  <link rel="stylesheet" href="lukuku-prd-template.css">
+</head>
+<body>
+  <section class="page cover">
+    <header class="header"><span class="brand">Lukuku.</span><span>LUKUKU-PRD-TEMPLATE-04</span></header>
+    <main class="content">
+      <h1>제품 요구사항 정의서<span style="color:#22df88">.</span></h1>
+      <div class="cover-kicker">PRD · {{CUSTOMER_NAME}}</div>
+      <div class="accent-line"></div>
+      <p class="cover-project">{{PROJECT_NAME}}</p>
+      <p class="cover-scope">{{TARGET_SCOPE}}</p>
+      <p class="cover-note">고객과 내부 팀이 함께 확인하는 기능 범위와 완료 기준</p>
+    </main>
+    <div class="cover-meta">
+      <table class="compact">
+        <thead><tr><th>문서 유형</th><th>작성 대상</th><th>작성</th><th>버전</th><th>작성일</th><th>상태</th></tr></thead>
+        <tbody><tr><td>제품 요구사항 정의서</td><td>{{CUSTOMER_NAME}}</td><td>{{AUTHOR}}</td><td>{{DOCUMENT_VERSION}}</td><td>{{DOCUMENT_DATE}}</td><td>{{DOCUMENT_STATUS}}</td></tr></tbody>
+      </table>
+      <p class="distribution">배포 범위: 고객 / 내부 검토</p>
+      <p class="status-line"><span class="status-dot"></span>LUKUKU PRD 표준 양식 v1.0 · {{DOCUMENT_STATUS}}</p>
+    </div>
+    <footer class="footer"><span>Lukuku · PRD Template v1.0</span><span>1 / 7</span></footer>
+  </section>
+
+  <section class="page" data-prd-section="1">
+    <header class="header"><span class="brand">Lukuku.</span><span>LUKUKU-PRD-TEMPLATE-04</span></header>
+    <main class="content">
+      <h3>문서 구성</h3>
+      <div class="contents-grid">
+        <div class="contents-item"><span class="contents-number">01</span><span>문서 정보</span></div>
+        <div class="contents-item"><span class="contents-number">02</span><span>배경과 목표</span></div>
+        <div class="contents-item"><span class="contents-number">03</span><span>포함·제외 범위</span></div>
+        <div class="contents-item"><span class="contents-number">04</span><span>사용자와 주요 업무 흐름</span></div>
+        <div class="contents-item"><span class="contents-number">05</span><span>기능 요구사항</span></div>
+        <div class="contents-item"><span class="contents-number">06</span><span>품질·제약 조건</span></div>
+        <div class="contents-item"><span class="contents-number">07</span><span>선행 조건·미확정 사항</span></div>
+        <div class="contents-item"><span class="contents-number">08</span><span>전체 인수 기준·관련 문서</span></div>
+      </div>
+      <div class="accent-line"></div>
+      <h2>1. 문서 정보</h2>
+      <h3>1.1 기본 정보</h3>
+      <table>
+        <thead><tr><th class="label-cell">항목</th><th>내용</th></tr></thead>
+        <tbody>
+          <tr><td class="label-cell">프로젝트명</td><td data-prd-field="project">{{PROJECT_NAME}}</td></tr>
+          <tr><td class="label-cell">고객사</td><td data-prd-field="customer">{{CUSTOMER_NAME}}</td></tr>
+          <tr><td class="label-cell">작성자</td><td data-prd-field="author">{{AUTHOR}}</td></tr>
+          <tr><td class="label-cell">문서 버전</td><td data-prd-field="version">{{DOCUMENT_VERSION}}</td></tr>
+          <tr><td class="label-cell">작성일</td><td data-prd-field="date">{{DOCUMENT_DATE}}</td></tr>
+          <tr><td class="label-cell">문서 상태</td><td data-prd-field="status">{{DOCUMENT_STATUS}}</td></tr>
+          <tr><td class="label-cell">대상 범위</td><td data-prd-field="scope">{{TARGET_SCOPE}}</td></tr>
+          <tr><td class="label-cell">문서번호</td><td data-prd-field="document-number">{{DOCUMENT_NUMBER}}</td></tr>
+        </tbody>
+      </table>
+      <h3>1.2 변경 이력</h3>
+      <table class="compact">
+        <thead><tr><th style="width:14%">버전</th><th style="width:18%">일자</th><th>주요 변경 내용</th><th>검토·합의 기록</th></tr></thead>
+        <tbody data-prd-rows="change-history"><tr><td>{{DOCUMENT_VERSION}}</td><td>{{DOCUMENT_DATE}}</td><td>{{CHANGE_SUMMARY}}</td><td>{{REVIEW_RECORD}}</td></tr></tbody>
+      </table>
+    </main>
+    <footer class="footer"><span>Lukuku · PRD Template v1.0</span><span>2 / 7</span></footer>
+  </section>
+
+  <section class="page">
+    <header class="header"><span class="brand">Lukuku.</span><span>LUKUKU-PRD-TEMPLATE-04</span></header>
+    <main class="content">
+      <div class="accent-line"></div>
+      <section data-prd-section="2">
+        <h2>2. 배경과 목표</h2>
+        <h3>2.1 배경과 해결할 문제</h3>
+        <p>{{BACKGROUND_AND_PROBLEM}}</p>
+        <h3>2.2 목표와 기대 결과</h3>
+        <table><thead><tr><th>목표</th><th>기대 결과</th><th>확인 방법</th></tr></thead><tbody data-prd-rows="goals">{{GOAL_ROWS}}</tbody></table>
+      </section>
+      <section data-prd-section="3">
+        <div class="accent-line"></div>
+        <h2>3. 포함·제외 범위</h2>
+        <h3>3.1 포함 범위</h3>
+        <table><thead><tr><th style="width:26%">범위</th><th>포함하는 내용</th></tr></thead><tbody data-prd-rows="in-scope">{{IN_SCOPE_ROWS}}</tbody></table>
+        <h3>3.2 제외 범위</h3>
+        <table><thead><tr><th style="width:26%">범위</th><th>제외하는 내용과 경계</th></tr></thead><tbody>{{OUT_OF_SCOPE_ROWS}}</tbody></table>
+      </section>
+    </main>
+    <footer class="footer"><span>Lukuku · PRD Template v1.0</span><span>3 / 7</span></footer>
+  </section>
+
+  <section class="page" data-prd-section="4">
+    <header class="header"><span class="brand">Lukuku.</span><span>LUKUKU-PRD-TEMPLATE-04</span></header>
+    <main class="content">
+      <div class="accent-line"></div>
+      <h2>4. 사용자와 주요 업무 흐름</h2>
+      <h3>4.1 사용자와 역할</h3>
+      <table><thead><tr><th>사용자·역할</th><th>사용 목적</th><th>수행하는 주요 업무</th></tr></thead><tbody data-prd-rows="roles">{{ROLE_ROWS}}</tbody></table>
+      <h3>4.2 주요 업무 흐름</h3>
+      <p class="field-line"><strong>흐름명:</strong> {{FLOW_NAME}}</p>
+      <p class="field-line"><strong>시작 조건:</strong> {{FLOW_START_CONDITION}}</p>
+      <table><thead><tr><th style="width:8%">순서</th><th style="width:23%">수행 주체</th><th>수행 동작</th><th>결과·다음 단계</th></tr></thead><tbody data-prd-rows="flows">{{FLOW_ROWS}}</tbody></table>
+      <p><strong>주요 분기·예외:</strong> {{FLOW_BRANCHES}}</p>
+    </main>
+    <footer class="footer"><span>Lukuku · PRD Template v1.0</span><span>4 / 7</span></footer>
+  </section>
+
+  <section class="page" data-prd-section="5">
+    <header class="header"><span class="brand">Lukuku.</span><span>LUKUKU-PRD-TEMPLATE-04</span></header>
+    <main class="content">
+      <div class="accent-line"></div>
+      <h2>5. 기능 요구사항</h2>
+      <h3>5.1 기능 요구사항 목록</h3>
+      <table class="compact"><thead><tr><th style="width:11%">ID</th><th>요구사항</th><th style="width:13%">우선순위</th><th style="width:16%">확정 상태</th><th style="width:31%">완료 기준</th></tr></thead><tbody data-prd-rows="functional-requirements">{{FUNCTIONAL_REQUIREMENT_ROWS}}</tbody></table>
+      <h3>5.2 기능 상세 설명</h3>
+      {{FUNCTIONAL_DETAIL_BLOCKS}}
+      <div class="note-box">
+        <h3>5.3 선택 기술 설명</h3>
+        <p class="field-line"><strong>대상 요구사항:</strong> {{TECHNICAL_CONTEXT_TARGET}}</p>
+        <table><thead><tr><th style="width:28%">구분</th><th>정의 내용 또는 관련 문서</th></tr></thead><tbody>{{TECHNICAL_CONTEXT_ROWS}}</tbody></table>
+      </div>
+    </main>
+    <footer class="footer"><span>Lukuku · PRD Template v1.0</span><span>5 / 7</span></footer>
+  </section>
+
+  <section class="page">
+    <header class="header"><span class="brand">Lukuku.</span><span>LUKUKU-PRD-TEMPLATE-04</span></header>
+    <main class="content">
+      <div class="accent-line"></div>
+      <section data-prd-section="6">
+        <h2>6. 품질·제약 조건</h2>
+        <h3>6.1 품질 조건</h3>
+        <table><thead><tr><th style="width:15%">ID</th><th>품질 조건</th><th>판단 기준·확인 환경</th></tr></thead><tbody>{{QUALITY_ROWS}}</tbody></table>
+        <h3>6.2 제약 조건</h3>
+        <table><thead><tr><th>항목</th><th>제약 내용</th><th>적용 범위·영향</th></tr></thead><tbody>{{CONSTRAINT_ROWS}}</tbody></table>
+      </section>
+      <section data-prd-section="7">
+        <div class="accent-line"></div>
+        <h2>7. 선행 조건·미확정 사항</h2>
+        <h3>7.1 선행 조건과 준비사항</h3>
+        <table class="compact"><thead><tr><th>준비 항목</th><th>제공·확인 담당</th><th>필요한 시점</th><th>미확보 시 영향</th></tr></thead><tbody>{{PREREQUISITE_ROWS}}</tbody></table>
+        <h3>7.2 미확정 사항</h3>
+        <table class="compact"><thead><tr><th>확인할 사항</th><th>관련 범위·요구사항</th><th>확인 담당</th><th>확인 예정일</th></tr></thead><tbody>{{OPEN_QUESTION_ROWS}}</tbody></table>
+      </section>
+    </main>
+    <footer class="footer"><span>Lukuku · PRD Template v1.0</span><span>6 / 7</span></footer>
+  </section>
+
+  <section class="page" data-prd-section="8">
+    <header class="header"><span class="brand">Lukuku.</span><span>LUKUKU-PRD-TEMPLATE-04</span></header>
+    <main class="content">
+      <div class="accent-line"></div>
+      <h2>8. 전체 인수 기준·관련 문서</h2>
+      <h3>8.1 전체 인수 기준</h3>
+      <table><thead><tr><th>인수 대상·조건</th><th>프로젝트 전체의 판단 기준</th><th>확인 근거</th></tr></thead><tbody data-prd-rows="acceptance">{{ACCEPTANCE_ROWS}}</tbody></table>
+      <h3>8.2 관련 문서</h3>
+      <table><thead><tr><th>문서명</th><th>기준 버전·일자</th><th>위치</th><th>연결 대상</th></tr></thead><tbody data-prd-rows="related-documents">{{RELATED_DOCUMENT_ROWS}}</tbody></table>
+      <p class="muted small">본 문서는 확인된 근거와 명시된 미확정 사항을 기준으로 작성되었습니다. 문서 렌더링은 요구사항 승인이나 개발 착수를 의미하지 않습니다.</p>
+    </main>
+    <footer class="footer"><span>Lukuku · PRD Template v1.0</span><span>7 / 7</span></footer>
+  </section>
+</body>
+</html>

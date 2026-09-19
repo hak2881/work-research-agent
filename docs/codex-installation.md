@@ -62,6 +62,7 @@ $work-status <프로젝트>
 $work-research 1 https://your-workspace.slack.com/archives/C01234567/p1234567890
 $work-research 2 https://your-workspace.slack.com/archives/C01234567/p1234567890
 $work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
+$work-prd https://your-workspace.slack.com/archives/C01234567/p1234567890
 ```
 
 `1`은 재발 방지 관점과 현재 요청 관점의 답변을 함께 만듭니다. 근본 원인은 현재 문의에서 직접 재현하거나 코드 흐름을 끝까지 추적한 경우에만 확정합니다. `2`는 고객사가 요청한 내용에 집중하며, 번호를 생략해도 `2`로 동작합니다.
@@ -75,6 +76,8 @@ $work-research https://your-workspace.slack.com/archives/C01234567/p1234567890
 결과는 고객사에게 보낼 답변을 먼저 표시한 뒤 핵심 판단, 개발자 검수 요청, 확인 근거와 검수 정보 순으로 작성합니다. 고객사 답변은 요청과 검토 상태만 전달하고 구현 방식을 확정하지 않습니다. 개발자 전달문도 상세 설계나 작업 지시 없이 요청·핵심 확인 사항·넓은 후보를 한 문단으로 정리해 적절한 작업 방안을 검토하도록 요청합니다. 성공한 Git 명령, SSH 우회, 임시 worktree, 메모리 파일이나 이력 저장 같은 내부 작업 로그는 표시하지 않으며, 실패가 답변 신뢰도에 영향을 줄 때만 짧게 알립니다.
 
 코드 검수가 필요하면 관련 저장소에서 원격 기본 브랜치를 먼저 `fetch`합니다. 깨끗한 기본 브랜치는 fast-forward 방식으로 최신화하고, 다른 브랜치나 로컬 변경이 있으면 이를 보존한 채 최신 원격 SHA를 임시 worktree에서 확인합니다. 답변에는 실제로 검수한 SHA를 표시합니다.
+
+`$work-prd`는 Slack 링크, 프로젝트명과 범위, 또는 문서를 입력받아 관련 이력과 최신 원본을 대조한 뒤 LUKUKU 표준 PRD의 8개 섹션을 작성합니다. 프로젝트 이력에 서로 다른 요청이 섞여 있으면 작성 범위를 먼저 확인합니다. 결과는 `~/.local/share/work-research-agent/prd/<project>/` 아래 HTML과 PDF로 생성하고 문서 버전과 근거를 DB에 연결합니다. 초안은 개발 TODO나 승인으로 전환하지 않으며 검토 후 `$dev-plan <PRD 경로>`로 넘깁니다.
 
 ## 조사 결과 실행
 
