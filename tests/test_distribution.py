@@ -35,6 +35,7 @@ def test_codex_plugin_exposes_skills_and_history_mcp() -> None:
         "work-history",
         "work-research",
         "work-prd",
+        "work-wbs",
         "work-status",
         "work-act",
         "dev-plan",
@@ -249,6 +250,40 @@ def test_work_prd_ships_the_lukuku_standard_template_and_renderer(tmp_path: Path
     )
     assert unsafe_result.returncode == 1
     assert "blocked remote media source" in unsafe_result.stderr
+
+
+def test_work_wbs_uses_verified_plan_and_ships_standard_assets() -> None:
+    skill_root = ROOT / "skills" / "work-wbs"
+    skill = (skill_root / "SKILL.md").read_text()
+    contract = (skill_root / "references" / "wbs-contract.md").read_text()
+    sources = (skill_root / "references" / "source-resolution.md").read_text()
+
+    for invocation in (
+        "$work-wbs <PRD path or URL>",
+        "$work-wbs <Slack permalink>",
+        "$work-wbs <project>",
+        "$work-wbs <work-item key>",
+        "$work-wbs <existing WBS path or URL>",
+    ):
+        assert invocation in skill
+    assert "history_project_context" in skill
+    assert "history_record_document" in skill
+    assert "history_record_wbs_schedule_snapshot" in skill
+    assert "$dev-plan" in skill
+    assert "Never infer an owner, date, effort, status, result, or approval" in skill
+    assert "XLSX" in skill and "PDF" in skill
+    assert "every PDF page passes" in skill
+    assert "does not authorize implementation" in contract
+    assert "missing effort" in contract.lower() and "verified zero" in contract.lower()
+    assert "superseded" in sources
+    assert "current primary evidence" in sources
+    for asset in (
+        "assets/lukuku-wbs-template.html",
+        "assets/lukuku-wbs-template.css",
+        "scripts/validate_wbs.py",
+        "scripts/render_wbs.py",
+    ):
+        assert (skill_root / asset).is_file()
 
 
 def test_work_research_incrementally_persists_new_history() -> None:

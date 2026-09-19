@@ -1,0 +1,43 @@
+@page { size: A4 landscape; margin: 0; }
+* { box-sizing: border-box; }
+body { margin: 0; color: #121826; background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+.page { width: 297mm; height: 210mm; padding: 12mm 14mm 10mm; position: relative; page-break-after: always; overflow: hidden; }
+.page:last-child { page-break-after: auto; }
+.header { display: flex; justify-content: space-between; align-items: center; height: 8mm; border-bottom: 1px solid #d8dde5; color: #687181; font-size: 8px; }
+.brand { color: #111827; font-size: 12px; font-weight: 800; }
+.content { padding-top: 7mm; }
+.footer { position: absolute; left: 14mm; right: 14mm; bottom: 5mm; display: flex; justify-content: space-between; border-top: 1px solid #e2e6ec; padding-top: 2mm; color: #7a8494; font-size: 7px; }
+h1 { margin: 0 0 4mm; font-size: 27px; line-height: 1.2; }
+h2 { margin: 0 0 4mm; font-size: 20px; }
+h3 { margin: 4mm 0 2mm; font-size: 11px; }
+p { margin: 1.5mm 0; font-size: 9px; line-height: 1.45; }
+.cover .content { padding-top: 30mm; }
+.cover-kicker { color: #0aa76a; font-size: 9px; font-weight: 700; letter-spacing: .08em; }
+.cover-title { margin-top: 8mm; font-size: 24px; font-weight: 800; }
+.accent { width: 12mm; height: 1.2mm; margin: 5mm 0; background: #22df88; }
+.cover-grid, .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin-top: 8mm; }
+.card { border: 1px solid #dfe4ea; background: #f7f9fb; padding: 3mm; min-height: 15mm; }
+.card-label { color: #657080; font-size: 7px; }
+.card-value { margin-top: 1mm; font-size: 11px; font-weight: 700; }
+.notice { margin: 3mm 0; padding: 2.5mm 3mm; background: #eafff5; border-left: 1.2mm solid #22df88; font-size: 8px; }
+.warning { background: #fff8df; border-left-color: #f4c542; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; margin: 2mm 0 4mm; font-size: 7.3px; }
+th { padding: 1.7mm 1.5mm; color: white; background: #161c29; border: 1px solid #161c29; text-align: left; }
+td { padding: 1.5mm; border: 1px solid #dfe4ea; vertical-align: top; word-break: keep-all; overflow-wrap: anywhere; }
+tbody tr:nth-child(even) td { background: #f7f9fb; }
+.compact th, .compact td { padding: 1mm 1.2mm; font-size: 6.7px; }
+.status-완료 { color: #08784e; font-weight: 700; }
+.status-진행-중 { color: #08784e; background: #dcfff0 !important; font-weight: 700; }
+.status-확인-대기 { color: #8a6100; background: #fff4cb !important; font-weight: 700; }
+.status-보류 { color: #6f7785; background: #edf0f3 !important; font-weight: 700; }
+.gantt { display: grid; grid-template-columns: 34mm repeat(16, 1fr); border: 1px solid #dfe4ea; }
+.gantt > div { min-height: 8mm; padding: 1.5mm; border-right: 1px solid #e5e9ef; border-bottom: 1px solid #e5e9ef; font-size: 7px; }
+.gantt-label { font-weight: 700; background: #f7f9fb; }
+.gantt-bar { background: #c4fae2; color: #075c3d; font-weight: 700; }
+.calendar { display: grid; grid-template-columns: repeat(7, 1fr); border-left: 1px solid #dfe4ea; border-top: 1px solid #dfe4ea; }
+.calendar > div { min-height: 24mm; padding: 1.5mm; border-right: 1px solid #dfe4ea; border-bottom: 1px solid #dfe4ea; font-size: 7px; }
+.calendar-head { min-height: 7mm !important; color: #08784e; background: #dcfff0; font-weight: 700; text-align: center; }
+.calendar-day { font-weight: 700; }
+.calendar-event { display: block; margin-top: 1mm; padding: .8mm; border-left: 1mm solid #22df88; background: #eafff5; font-size: 6.2px; }
+.muted { color: #6f7785; }
+.small { font-size: 7px; }

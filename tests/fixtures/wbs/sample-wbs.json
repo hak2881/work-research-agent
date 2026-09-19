@@ -1,0 +1,174 @@
+{
+  "template_version": "1.1",
+  "document": {
+    "number": "LUKUKU-WBS-VERISH-001",
+    "version": "v0.1",
+    "status": "초안",
+    "as_of_date": "2026-09-20",
+    "project": "Verish Checkout",
+    "project_slug": "verish",
+    "customer": "Verish",
+    "pm": "LUKUKU PM",
+    "author": "LUKUKU PM",
+    "predecessor_key": null
+  },
+  "scope": {
+    "title": "Checkout reliability",
+    "inclusions": ["Retry persistence", "Customer verification"],
+    "exclusions": ["Production deployment"],
+    "unresolved": ["Optional analytics dashboard"]
+  },
+  "change_history": [
+    {
+      "version": "v0.1",
+      "date": "2026-09-20",
+      "affected_ids": ["TASK-001", "TASK-002", "MS-001"],
+      "reason": "Initial draft",
+      "author": "LUKUKU PM",
+      "confirmation": "Review pending",
+      "source_ref": "prd"
+    }
+  ],
+  "sources": [
+    {
+      "key": "prd",
+      "type": "prd",
+      "uri": "file:///tmp/checkout-prd.pdf",
+      "version": "v1.0",
+      "checked_at": "2026-09-20T00:00:00Z"
+    },
+    {
+      "key": "result-dev-1",
+      "type": "verification",
+      "uri": "git://api/abc123",
+      "version": "abc123",
+      "checked_at": "2026-09-20T01:00:00Z"
+    },
+    {
+      "key": "progress-dev-2",
+      "type": "work-log",
+      "uri": "history://verish/DEV-2",
+      "version": "2026-09-20",
+      "checked_at": "2026-09-20T02:00:00Z"
+    }
+  ],
+  "rendering": {
+    "start_month": "2026-09",
+    "end_month": "2026-12",
+    "timezone": "Asia/Seoul"
+  },
+  "items": [
+    {
+      "work_item_key": "DEV-1",
+      "display_id": "TASK-001",
+      "item_type": "task",
+      "title": "Persist retry state",
+      "phase": "개발",
+      "workstream": "Backend",
+      "owner": "BE",
+      "collaborators": ["PM"],
+      "origin": "explicit",
+      "confirmed_scope": true,
+      "wbs_status": "완료",
+      "schedule_basis": "confirmed",
+      "dates": {
+        "baseline": {"start": "2026-09-21", "end": "2026-09-22", "source_ref": "prd"},
+        "forecast": {"start": "2026-09-21", "end": "2026-09-22", "source_ref": "prd"},
+        "actual": {"start": "2026-09-21", "end": "2026-09-22", "source_ref": "result-dev-1"}
+      },
+      "estimate": {"key": "engineering-api@abc123", "min": 8, "max": 12, "unit": "MH", "basis": "engineering", "source_ref": "prd"},
+      "actual_effort": {"value": 10, "unit": "MH", "source_ref": "result-dev-1"},
+      "dependencies": [],
+      "prerequisites": ["Queue access"],
+      "completion_criteria": [{"key": "AC-001", "text": "Retry state is persisted", "origin": "explicit", "status": "accepted"}],
+      "requirement_refs": ["FR-001"],
+      "result_evidence": ["result-dev-1"],
+      "change_note": "",
+      "next_action": ""
+    },
+    {
+      "work_item_key": "DEV-2",
+      "display_id": "TASK-002",
+      "item_type": "task",
+      "title": "Retry failed deliveries",
+      "phase": "개발",
+      "workstream": "Backend",
+      "owner": "BE",
+      "collaborators": ["PM"],
+      "origin": "explicit",
+      "confirmed_scope": true,
+      "wbs_status": "진행 중",
+      "schedule_basis": "planned",
+      "dates": {
+        "baseline": {"start": "2026-09-23", "end": "2026-09-25", "source_ref": "prd"},
+        "forecast": {"start": "2026-09-24", "end": "2026-09-28", "source_ref": "progress-dev-2"},
+        "actual": {"start": "2026-09-24", "end": null, "source_ref": "progress-dev-2"}
+      },
+      "estimate": {"key": "engineering-api@def456", "min": 12, "max": 16, "unit": "MH", "basis": "engineering", "source_ref": "prd"},
+      "actual_effort": {"value": 0, "unit": "MH", "source_ref": "progress-dev-2"},
+      "dependencies": ["DEV-1"],
+      "prerequisites": ["DEV-1 completed"],
+      "completion_criteria": [{"key": "AC-002", "text": "Retries stop at the configured limit", "origin": "explicit", "status": "accepted"}],
+      "requirement_refs": ["FR-002"],
+      "result_evidence": [],
+      "change_note": "Forecast updated from current progress",
+      "next_action": "Complete verification"
+    },
+    {
+      "work_item_key": "MS-VERIFY",
+      "display_id": "MS-001",
+      "item_type": "milestone",
+      "title": "Customer verification",
+      "phase": "고객 검수",
+      "workstream": "Common",
+      "owner": "PM",
+      "collaborators": ["Customer"],
+      "origin": "explicit",
+      "confirmed_scope": true,
+      "wbs_status": "예정",
+      "schedule_basis": "planned",
+      "dates": {
+        "baseline": {"start": "2026-10-02", "end": "2026-10-02", "source_ref": "prd"},
+        "forecast": {"start": "2026-10-05", "end": "2026-10-05", "source_ref": "prd"},
+        "actual": {"start": null, "end": null, "source_ref": null}
+      },
+      "estimate": {"key": "milestone", "min": 0, "max": 0, "unit": "MH", "basis": "source", "source_ref": "prd"},
+      "actual_effort": null,
+      "dependencies": ["DEV-2"],
+      "prerequisites": ["Development verification complete"],
+      "completion_criteria": [{"key": "AC-003", "text": "Customer decision is recorded", "origin": "explicit", "status": "accepted"}],
+      "requirement_refs": ["FR-001", "FR-002"],
+      "result_evidence": [],
+      "change_note": "",
+      "next_action": "Prepare review"
+    },
+    {
+      "work_item_key": "DEV-OPTIONAL",
+      "display_id": "TASK-003",
+      "item_type": "task",
+      "title": "Optional analytics dashboard",
+      "phase": "변경 관리",
+      "workstream": "Frontend",
+      "owner": null,
+      "collaborators": [],
+      "origin": "proposed",
+      "confirmed_scope": false,
+      "wbs_status": "보류",
+      "schedule_basis": "unknown",
+      "dates": {
+        "baseline": {"start": null, "end": null, "source_ref": null},
+        "forecast": {"start": null, "end": null, "source_ref": null},
+        "actual": {"start": null, "end": null, "source_ref": null}
+      },
+      "estimate": null,
+      "actual_effort": null,
+      "dependencies": ["DEV-1"],
+      "prerequisites": ["Scope approval"],
+      "completion_criteria": [{"key": "AC-004", "text": "Dashboard scope is approved", "origin": "proposed", "status": "proposed"}],
+      "requirement_refs": [],
+      "result_evidence": [],
+      "change_note": "Unapproved addition",
+      "next_action": "PM decision required"
+    }
+  ]
+}
